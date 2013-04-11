@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="edu.umuc.ga.gaPlugin" class="edu.umuc.ga.gaPlugin.GATestStage" version="0.0.1">
+    <runtime>
+        <library id="GATestStage" path="/" type="code"/>
+    </runtime>    
+</plugin>

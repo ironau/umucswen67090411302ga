@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="jenes.stage.operator.common.TwoPointsCrossover" class="jenes.stage.operator.common.TwoPointsCrossover" version="1.5.1">
+    <requires>
+        <import plugin-id="jenes.stage.operator.Crossover"/>
+    </requires>
+    <runtime>
+        <library id="TwoPointsCrossover" path="/" type="code"/>
+    </runtime>
+    <extension plugin-id="jenes.stage.operator.Crossover" point-id="@{extensionid}" id="jenes.stage.operator.common.TwoPointsCrossover">
+        <parameter id="name" value="TwoPointsCrossover"/>
+        <parameter id="class" value="jenes.stage.operator.common.TwoPointsCrossover"/>
+    </extension>
+</plugin>
+                 
