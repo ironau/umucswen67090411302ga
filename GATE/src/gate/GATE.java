@@ -18,9 +18,17 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
@@ -40,9 +48,36 @@ public class GATE extends Application {
     static final Logger log = java.util.logging.Logger.getLogger(GATE.class.getName()) ;
     private Map<String, Identity> publishedPlugins;
     PluginRegistry plugReg = pluginManager.getRegistry();
+    @FXML
+    ChoiceBox ChromSelect;
+    @FXML
+    ListView AvailStages;
+    @FXML
+    ListView StageOrd;
+    @FXML
+    ListView ExperimentQueue;
+    @FXML
+    TextField MaxPopTxt;
+    @FXML
+    TextField MutRate;
+    @FXML
+    TextField MaxGen;
+    @FXML
+    TextArea AddedParams;
+    @FXML
+    TextArea RunningLog;
+    @FXML
+    LineChart CurProg;
+    @FXML
+    Button InitExperiment;
+    @FXML
+    Button StartExperiment;
+    @FXML
+    Button AbortExperiment;
             
     @Override
     public void start(Stage stage) throws Exception {
+        
         testFileWrite();
         configureLogger();
         log.fine("Logging enabled");
@@ -236,4 +271,5 @@ public class GATE extends Application {
            
         }
     }*/
+
 }
