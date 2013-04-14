@@ -14,6 +14,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +32,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -43,7 +43,10 @@ import javafx.scene.layout.AnchorPane;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
+import org.java.plugin.registry.Extension;
+import org.java.plugin.registry.ExtensionPoint;
 import org.java.plugin.registry.Identity;
+import org.java.plugin.registry.PluginAttribute;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.registry.PluginRegistry;
 import org.java.plugin.standard.StandardPluginLocation;
@@ -54,6 +57,7 @@ public class GateController implements Initializable {
     static final Logger log = java.util.logging.Logger.getLogger(GATE.class.getName()) ;
     private Map<String, Identity> publishedPlugins;
     PluginRegistry plugReg = pluginManager.getRegistry();
+    ObservableList stageList;
     
     @FXML
     ChoiceBox ChromSelect;
@@ -84,6 +88,7 @@ public class GateController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        log.fine(this.getClass().getSimpleName() + ".initialize");
         assert ChromSelect != null : "fx:id=\"ChromSelect\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
         assert AvailStages != null : "fx:id=\"AvailStages\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
         assert StageOrd != null : "fx:id=\"StageOrd\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
@@ -98,53 +103,93 @@ public class GateController implements Initializable {
         assert StartExperiment != null : "fx:id=\"StartExperiment\" was not injected: check your FXML file 'IssueTrackingLite.fxml'.";
         
         configureLogger();
-        log.fine("Logging enabled");
-        log.fine(this.getClass().getSimpleName() + ".initialize");
-        configureButtons();
-        configureStages();
-        configureGraph();
-        configureProperties();
-        configureStats();
-    //loadStandardPlugins();
+        log.info ("logging configured");
+        //loadStandardPlugins();
         loadPlugins();
-        log.fine("loadPlugins complete");
+        log.info ("loadPlugins complete");
         addPlugins();
-        log.fine("addplugins complete");
+        log.info("addplugins complete");
+        configureStages();
+        log.info("configureStages complete");
+        configureButtons();
+        log.info("configureButtons complete");
+        configureGraph();
+        log.info("configureGraph complete");
+        configureProperties();
+        log.info("configureProperties complete");
+        configureStats();
+        log.info("configureStats complete");
     }
 
     /**
      * 
      */
     private void configureButtons() {
-        
+        log.info(this.getClass().getSimpleName()+"configureButtons");
     }
 
     /**
      * 
      */
     private void configureStages() {
-        
+        configureExtensionPoint("jenes.stage.AbstractStage");
+        configureExtensionPoint("jenes.stage.operator.Crossover");
+        configureExtensionPoint("jenes.stage.operator.Mutator");
+        configureExtensionPoint("jenes.stage.operator.Scaling");
+        configureExtensionPoint("jenes.stage.operator.Selector");
+        configureExtensionPoint("jenes.stage.operator.Crowder");
+//        configureExtensionPoint("jenes.population.Fitness");
+    }
+    /**
+     * 
+     */
+    private void configureExtensionPoint(String etpName) {
+        log.info(this.getClass().getSimpleName()+" configureStages");
+        PluginDescriptor abstractStageDescriptor = plugReg.getPluginDescriptor(etpName);
+        log.fine("found the abstractStage descriptor");
+        ExtensionPoint extPointAbstractStages = plugReg.getExtensionPoint(abstractStageDescriptor.getId(), etpName);
+        log.fine("loaded the abstractStage extension point");
+        ArrayList<String> stageGatherer = new ArrayList();
+        for (Iterator it = extPointAbstractStages.getConnectedExtensions().iterator(); it.hasNext();){
+            log.fine("Loading a stage plugin ");
+            Extension ext = (Extension) it.next();
+            PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
+            log.log(Level.INFO, "Loading the stage plugin called {0}", ext.getParameter("name").valueAsString());
+            stageGatherer.add(ext.getParameter("name").valueAsString());
+            
+            // These lines will likely have to move into the GA configuring method triggered by the Initialize Button
+            ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
+            try {
+                Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        stageList = FXCollections.observableArrayList(stageGatherer);
+        AvailStages.setItems(stageList); 
+        log.fine("tied the available stage plugins to the list view");
+        log.exiting("configureStages", this.getClass().toString());
     }
 
     /**
      * 
      */
     private void configureGraph() {
-        
+        log.info(this.getClass().getSimpleName()+"configureGraph");
     }
 
     /**
      *
      */
     private void configureStats() {
-        
+        log.info(this.getClass().getSimpleName()+"configureStats");
     }
 
     /**
      * 
      */
     private void configureProperties() {
-        
+        log.info(this.getClass().getSimpleName()+"configureProperties");
     }
     
         /**

@@ -80,7 +80,7 @@ public class GATE extends Application {
      * within a JavaFX Application.
      * 
      */
-    private void testFileWrite(){
+/*    private void testFileWrite(){
         FileOutputStream testOut = null;
         try {
             File test=new File("TestOutput.log");
@@ -100,5 +100,5 @@ public class GATE extends Application {
                 java.util.logging.Logger.getLogger(GATE.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
+    }*/
 }
