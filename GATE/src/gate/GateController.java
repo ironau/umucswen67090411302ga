@@ -294,4 +294,13 @@ public class GateController implements Initializable {
                
     }
 
+    /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void toggleStage(ActionEvent event) {
+            String selectedStage = (String) event.getSource();
+            log.fine("Event: a stage was selected" + selectedStage);
+        }
 }

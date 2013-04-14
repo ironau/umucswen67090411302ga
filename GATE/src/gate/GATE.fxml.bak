@@ -9,14 +9,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" fx:id="GATE" blendMode="DARKEN" cache="true" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gate.GATEController">
+<AnchorPane id="AnchorPane" fx:id="GATE" blendMode="DARKEN" cache="true" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gate.GateController">
   <children>
     <BorderPane id="" prefHeight="800.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <bottom>
         <TextArea fx:id="RunningLog" editable="false" prefWidth="200.0" text="Running Statistics will be displayed here" />
       </bottom>
       <center>
-        <LineChart fx:id="CurProg" title="Current Progress">
+        <LineChart fx:id="CurProg" minHeight="-Infinity" minWidth="-Infinity" title="Current Progress">
           <xAxis>
             <NumberAxis side="BOTTOM" />
           </xAxis>
@@ -34,6 +34,27 @@
       <right>
         <Accordion fx:id="Config" blendMode="SOFT_LIGHT" BorderPane.alignment="TOP_LEFT">
           <expandedPane>
+            <TitledPane fx:id="Stage" animated="false" text="Stage Selection">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <ListView fx:id="AvailStages" onMouseClicked="#ToggleStage" prefHeight="445.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                    <ChoiceBox fx:id="ChromSelect" layoutX="3.0" layoutY="22.0" prefWidth="193.99990000000253">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ChoiceBox>
+                    <Label layoutX="3.0" layoutY="3.0" text="Chromosome Type" />
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
             <TitledPane fx:id="Props" animated="false" text="Properties Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -50,28 +71,7 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-          </expandedPane>
-          <panes>
-            <fx:reference source="Props" />
-            <TitledPane fx:id="Stage" animated="false" text="Stage Selection">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ListView fx:id="AvailStages" prefHeight="445.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0" />
-                    <ChoiceBox fx:id="ChromSelect" layoutX="3.0" layoutY="22.0" prefWidth="193.99990000000253">
-                      <items>
-                        <FXCollections fx:factory="observableArrayList">
-                          <String fx:value="Item 1" />
-                          <String fx:value="Item 2" />
-                          <String fx:value="Item 3" />
-                        </FXCollections>
-                      </items>
-                    </ChoiceBox>
-                    <Label layoutX="3.0" layoutY="3.0" text="Chromosome Type" />
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
+            <fx:reference source="Stage" />
             <TitledPane id="StageOrd" animated="false" text="Stage Ordering">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
