@@ -85,6 +85,7 @@ public class GateController implements Initializable {
     Button StartExperiment;
     @FXML
     Button AbortExperiment;
+    private ObservableList chromList;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -142,6 +143,13 @@ public class GateController implements Initializable {
         gaStages.addAll(configureExtensionPoint("jenes.population.Fitness"));
         stageList = FXCollections.observableArrayList(gaStages);
         AvailStages.setItems(stageList); 
+        log.fine("tied the available stage plugins to the list view");
+        log.exiting("configureStages", this.getClass().toString());
+
+        ArrayList gaChromosomes = new ArrayList();
+        gaChromosomes.addAll(configureExtensionPoint("jenes.chromosome.Chromosome"));
+        chromList = FXCollections.observableArrayList(gaChromosomes);
+        ChromSelect.setItems(chromList); 
         log.fine("tied the available stage plugins to the list view");
         log.exiting("configureStages", this.getClass().toString());
 
