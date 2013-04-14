@@ -2,17 +2,18 @@
 
 <?import java.lang.*?>
 <?import java.util.*?>
+<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" fx:id="GATE" blendMode="DARKEN" cache="true" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gate.GATE">
+<AnchorPane id="AnchorPane" fx:id="GATE" blendMode="DARKEN" cache="true" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gate.GATEController">
   <children>
     <BorderPane id="" prefHeight="800.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <bottom>
-        <TextArea editable="false" prefWidth="200.0" text="Running Statistics will be displayed here" />
+        <TextArea fx:id="RunningLog" editable="false" prefWidth="200.0" text="Running Statistics will be displayed here" />
       </bottom>
       <center>
         <LineChart fx:id="CurProg" title="Current Progress">
@@ -44,7 +45,7 @@
                     <TextField fx:id="MaxGen" layoutX="14.0" layoutY="106.0" prefWidth="181.0" promptText="Maximum Generations" />
                     <Label fx:id="MaxGenLbll" layoutX="14.0" layoutY="90.0" text="Maximum Generations" />
                     <Label layoutX="14.0" layoutY="128.0" text="Additional Parameters" />
-                    <TextArea layoutX="14.0" layoutY="144.0" prefHeight="168.0" prefWidth="181.0" promptText="Enter additional parameters" wrapText="true" />
+                    <TextArea fx:id="AddedParams" layoutX="14.0" layoutY="144.0" prefHeight="168.0" prefWidth="181.0" promptText="Enter additional parameters" wrapText="true" />
                   </children>
                 </AnchorPane>
               </content>
@@ -56,25 +57,35 @@
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView prefHeight="496.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="AvailStages" prefHeight="445.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0" />
+                    <ChoiceBox fx:id="ChromSelect" layoutX="3.0" layoutY="22.0" prefWidth="193.99990000000253">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ChoiceBox>
+                    <Label layoutX="3.0" layoutY="3.0" text="Chromosome Type" />
                   </children>
                 </AnchorPane>
               </content>
             </TitledPane>
-            <TitledPane fx:id="StageOrd" animated="false" text="Stage Ordering">
+            <TitledPane id="StageOrd" animated="false" text="Stage Ordering">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView prefHeight="496.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="StageOrd" prefHeight="496.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   </children>
                 </AnchorPane>
               </content>
             </TitledPane>
-            <TitledPane id="AcrdPanQueue" fx:id="x2" animated="false" text="Experiment Queue">
+            <TitledPane id="AcrdPanQueue" animated="false" text="Experiment Queue">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView prefHeight="496.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="ExperimentQueue" prefHeight="496.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   </children>
                 </AnchorPane>
               </content>
@@ -88,9 +99,9 @@
       <top>
         <HBox padding="$x1" prefHeight="20.0" prefWidth="1270.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
           <children>
-            <Button mnemonicParsing="false" text="Initialize" />
-            <Button mnemonicParsing="false" text="Start" />
-            <Button mnemonicParsing="false" text="Abort" />
+            <Button id="InitExperitment" fx:id="InitExperiment" mnemonicParsing="false" text="Initialize" />
+            <Button fx:id="StartExperiment" mnemonicParsing="false" text="Start" />
+            <Button fx:id="AbortExperiment" mnemonicParsing="false" text="Abort" />
           </children>
         </HBox>
       </top>

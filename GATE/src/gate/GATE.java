@@ -29,6 +29,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
@@ -44,56 +45,22 @@ import org.java.plugin.standard.StandardPluginLocation;
  * @author ironau
  */
 public class GATE extends Application {
-    private PluginManager pluginManager= ObjectFactory.newInstance().createManager();
     static final Logger log = java.util.logging.Logger.getLogger(GATE.class.getName()) ;
-    private Map<String, Identity> publishedPlugins;
-    PluginRegistry plugReg = pluginManager.getRegistry();
-    @FXML
-    ChoiceBox ChromSelect;
-    @FXML
-    ListView AvailStages;
-    @FXML
-    ListView StageOrd;
-    @FXML
-    ListView ExperimentQueue;
-    @FXML
-    TextField MaxPopTxt;
-    @FXML
-    TextField MutRate;
-    @FXML
-    TextField MaxGen;
-    @FXML
-    TextArea AddedParams;
-    @FXML
-    TextArea RunningLog;
-    @FXML
-    LineChart CurProg;
-    @FXML
-    Button InitExperiment;
-    @FXML
-    Button StartExperiment;
-    @FXML
-    Button AbortExperiment;
             
     @Override
     public void start(Stage stage) throws Exception {
+        try {
+//            Parent page= FXMLLoader.load(getClass().getResource("GATE.fxml"));
+            AnchorPane page = (AnchorPane) FXMLLoader.load(GATE.class.getResource("GATE.fxml"));
+            Scene scene = new Scene(page);
+            stage.setScene(scene);
+            stage.setTitle("Gentic Algorithm Testing Envirionment");
+            stage.show();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,GATE.class.getName(), ex);
+            System.exit(-1);
+        }
         
-        testFileWrite();
-        configureLogger();
-        log.fine("Logging enabled");
-        
-        //loadStandardPlugins();
-        loadPlugins();
-        log.fine("loadPlugins complete");
-        addPlugins();
-        log.fine("addplugins complete");
-        
-        Parent root = FXMLLoader.load(getClass().getResource("GATE.fxml"));
-        
-        Scene scene = new Scene(root);
-        
-        stage.setScene(scene);
-        stage.show();
     }
 
     /**
@@ -105,99 +72,8 @@ public class GATE extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        launch(args);
+        Application.launch(args);
     }
-
-    /**
-     * This method adds the plug-ins to the running environment so they may be 
-     * used later.
-     */
-    private void addPlugins() {
-        try{
-            plugReg = pluginManager.getRegistry();
-            ArrayList plugDescList = new ArrayList(plugReg.getPluginDescriptors());
-            Iterator iter = plugDescList.iterator();
-            
-            while(iter.hasNext()){
-                PluginDescriptor plugDesc = (PluginDescriptor) iter.next();
-                log.info("Added a Plugin "+plugDesc.getPluginClassName()+" "+plugDesc.getUniqueId()); 
-                /*@TODO apply logic on which plugins to load.
-                * mostlikely will have to load chromosomes first, 
-                * Then Fitness Functions.
-                * Then additional stages
-                */
-            }
-        }catch(NullPointerException npe){
-            log.log(Level.INFO,"NullPointer Exception ", npe);
-        }
-        
-    }
-
-    /**
-     * This method finds plug-ins located in the ".\plugins" directory and stores
-     * them into the plug-in Manager
-     */
-    private void loadPlugins() {
-        PluginLocation[] locations = null;
-        File pluginsDir = new File ("plugins");
-        FilenameFilter pluginFilter = new FilenameFilter(){
-            public boolean accept(File dir, String name){
-                return (name.toLowerCase().endsWith("jar")||name.toLowerCase().endsWith("zip"));
-            }
-        };
-        File[] plugins = pluginsDir.listFiles(pluginFilter);
-        if (null == plugins){
-            log.info("No Plugins to Load");
-            return;
-        }
-        log.info("Number of plugins is"+Integer.toString(plugins.length)+" "+plugins[0].getAbsolutePath());
-        locations = new PluginLocation[plugins.length];
-        for (int i=0;i<plugins.length;i++)
-        {
-            try {
-                locations[i]=StandardPluginLocation.create(plugins[i]);
-                log.fine("Loaded plugin from file "+plugins[i].getName());
-                log.fine("Location array is "+locations[i].getContextLocation());
-            } catch (NullPointerException npe){
-                log.log(Level.FINE,"File invalid "+plugins[i].getName(),npe);
-            }catch (Exception e) {
-                log.log(Level.WARNING,"Failed to loaded plugin from file "+plugins[i].getName(),e);
-            }
-        }
-        try{
-            for (PluginLocation loc : locations){
-                log.info(loc.hashCode()+" "+loc.getContextLocation());
-            }
-            Map<String, Identity> publishPlugins = pluginManager.publishPlugins(locations);
-            log.fine("Finished Loading plugins from "+pluginsDir.getName());
-        } catch (JpfException jpfe){
-            log.log(Level.WARNING,"Failed to publish plugins, Plugin Framework exception ",jpfe);
-            System.exit(-1);
-        } catch (NullPointerException npe){
-            log.log(Level.WARNING,"Failed to publish plugins, null pointer: ",npe);
-            System.exit(-1);
-           
-        }
-               
-    }
-
-    /**
-     * This method configures logging for the application from the property file.
-     */
-    private void configureLogger() {
-        try {
-            LogManager logMan=LogManager.getLogManager();
-            File appLogProps = new File("logging.properties");
-            log.info(appLogProps.getAbsolutePath());
-            FileInputStream logPropsStream= new FileInputStream(appLogProps);
-            logMan.readConfiguration(logPropsStream);
-        } catch (IOException ex) {
-            Logger.getLogger(GATE.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            Logger.getLogger(GATE.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-   }
 
     /**
      * This is a test method just to verify that a file can be written to from 
@@ -225,51 +101,4 @@ public class GATE extends Application {
             }
         }
     }
-
-/*    private void loadStandardPlugins() {
-        PluginLocation[] locations = null;
-        File pluginsDir = new File ("plugins");
-        FilenameFilter pluginFilter = new FilenameFilter(){
-            public boolean accept(File dir, String name){
-                return name.toLowerCase().endsWith("zip");
-            }
-        };
-        File[] plugins = pluginsDir.listFiles(pluginFilter);
-        if (null == plugins){
-            log.info("No Plugins to Load");
-            return;
-        }
-        log.info("Number of plugins is"+Integer.toString(plugins.length)+" "+plugins[0].getAbsolutePath());
-        locations = new PluginLocation[plugins.length];
-        for (int i=0;i<plugins.length;i++)
-        {
-            try {
-                locations[i]=StandardPluginLocation.create(plugins[i]);
-                log.fine("Loaded plugin from file "+plugins[i].getName());
-                 log.fine("Location array is "+locations[i].getContextLocation());
-            } catch (NullPointerException npe){
-                log.log(Level.FINE,"File invalid "+plugins[i].getName(),npe);
-            }catch (Exception e) {
-                log.log(Level.WARNING,"Failed to loaded plugin from file "+plugins[i].getName(),e);
-            }
-        }
-        try{
-            log.fine("Plugin Manager: "+pluginManager.toString()); 
-            log.fine("Plugin Location Array: "+locations.toString());
-            log.info("number of locations found is: "+Integer.toString(locations.length));
-            for (PluginLocation loc : locations){
-                log.info(loc.hashCode()+" "+loc.getContextLocation());
-            }
-            Map<String, Identity> publishPlugins = pluginManager.publishPlugins(locations);
-            log.fine("Finished Loading plugins from "+pluginsDir.getName());
-        } catch (JpfException jpfe){
-            log.log(Level.WARNING,"Failed to publish plugins, Plugin Framework exception ",jpfe);
-            System.exit(-1);
-        } catch (NullPointerException npe){
-            log.log(Level.WARNING,"Failed to publish plugins, null pointer: ",npe);
-            System.exit(-1);
-           
-        }
-    }*/
-
 }
