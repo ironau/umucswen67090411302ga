@@ -132,18 +132,24 @@ public class GateController implements Initializable {
      * 
      */
     private void configureStages() {
-        configureExtensionPoint("jenes.stage.AbstractStage");
-        configureExtensionPoint("jenes.stage.operator.Crossover");
-        configureExtensionPoint("jenes.stage.operator.Mutator");
-        configureExtensionPoint("jenes.stage.operator.Scaling");
-        configureExtensionPoint("jenes.stage.operator.Selector");
-        configureExtensionPoint("jenes.stage.operator.Crowder");
-//        configureExtensionPoint("jenes.population.Fitness");
+        ArrayList gaStages = new ArrayList();
+        gaStages.addAll(configureExtensionPoint("jenes.stage.AbstractStage"));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crossover"));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Mutator"));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Scaling"));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Selector"));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crowder"));
+        gaStages.addAll(configureExtensionPoint("jenes.population.Fitness"));
+        stageList = FXCollections.observableArrayList(gaStages);
+        AvailStages.setItems(stageList); 
+        log.fine("tied the available stage plugins to the list view");
+        log.exiting("configureStages", this.getClass().toString());
+
     }
     /**
      * 
      */
-    private void configureExtensionPoint(String etpName) {
+    private ArrayList configureExtensionPoint(String etpName) {
         log.info(this.getClass().getSimpleName()+" configureStages");
         PluginDescriptor abstractStageDescriptor = plugReg.getPluginDescriptor(etpName);
         log.fine("found the abstractStage descriptor");
@@ -165,10 +171,7 @@ public class GateController implements Initializable {
                 Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        stageList = FXCollections.observableArrayList(stageGatherer);
-        AvailStages.setItems(stageList); 
-        log.fine("tied the available stage plugins to the list view");
-        log.exiting("configureStages", this.getClass().toString());
+        return stageGatherer;
     }
 
     /**
