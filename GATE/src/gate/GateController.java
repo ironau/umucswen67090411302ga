@@ -306,9 +306,9 @@ public class GateController implements Initializable {
         public void toggleStage() {
             ObservableList selectedStage = (ObservableList) AvailStages.getSelectionModel().getSelectedItems();
             log.fine("Event: a stage was selected " + selectedStage);
-            StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
             selectedStageList.clear();
             selectedStageList.addAll(selectedStage);
+            StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
             
         }
 
