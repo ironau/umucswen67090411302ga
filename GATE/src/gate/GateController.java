@@ -58,6 +58,7 @@ public class GateController implements Initializable {
     private Map<String, Identity> publishedPlugins;
     PluginRegistry plugReg = pluginManager.getRegistry();
     ObservableList stageList;
+    ArrayList<String> selectedStageList = new ArrayList();
     
     @FXML
     ChoiceBox ChromSelect;
@@ -120,6 +121,8 @@ public class GateController implements Initializable {
         log.info("configureProperties complete");
         configureStats();
         log.info("configureStats complete");
+        configureOrdering();
+        log.info("configureOrdering complete");
     }
 
     /**
@@ -159,6 +162,7 @@ public class GateController implements Initializable {
      */
     private ArrayList configureExtensionPoint(String etpName) {
         log.info(this.getClass().getSimpleName()+" configureStages");
+        AvailStages.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         PluginDescriptor abstractStageDescriptor = plugReg.getPluginDescriptor(etpName);
         log.fine("found the abstractStage descriptor");
         ExtensionPoint extPointAbstractStages = plugReg.getExtensionPoint(abstractStageDescriptor.getId(), etpName);
@@ -299,8 +303,16 @@ public class GateController implements Initializable {
      * Currently this doesn't work.
      * @param event 
      */
-        public void toggleStage(ActionEvent event) {
-            String selectedStage = (String) event.getSource();
-            log.fine("Event: a stage was selected" + selectedStage);
+        public void toggleStage() {
+            ObservableList selectedStage = (ObservableList) AvailStages.getSelectionModel().getSelectedItems();
+            log.fine("Event: a stage was selected " + selectedStage);
+            StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
+            selectedStageList.clear();
+            selectedStageList.addAll(selectedStage);
+            
         }
+
+    private void configureOrdering() {
+        StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
+    }
 }
