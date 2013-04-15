@@ -11,12 +11,12 @@
 
 <AnchorPane id="AnchorPane" fx:id="GATE" blendMode="DARKEN" cache="true" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gate.GateController">
   <children>
-    <BorderPane id="" prefHeight="800.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <BorderPane id="" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <bottom>
         <TextArea fx:id="RunningLog" editable="false" prefWidth="200.0" text="Running Statistics will be displayed here" />
       </bottom>
       <center>
-        <LineChart fx:id="CurProg" minHeight="-Infinity" minWidth="-Infinity" title="Current Progress">
+        <LineChart fx:id="CurProg" minHeight="-Infinity" minWidth="-Infinity" title="Current Progress" BorderPane.alignment="TOP_LEFT">
           <xAxis>
             <NumberAxis side="BOTTOM" />
           </xAxis>
@@ -32,41 +32,60 @@
         <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
       </padding>
       <right>
-        <Accordion fx:id="Config" blendMode="SOFT_LIGHT" BorderPane.alignment="TOP_LEFT">
+        <Accordion fx:id="Config" blendMode="SOFT_LIGHT" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="TOP_LEFT">
           <expandedPane>
             <TitledPane fx:id="Stage" animated="false" text="Stage Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView fx:id="AvailStages" onMouseClicked="#toggleStage" prefHeight="445.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                    <ChoiceBox fx:id="ChromSelect" layoutX="3.0" layoutY="22.0" prefWidth="193.99990000000253">
-                      <items>
-                        <FXCollections fx:factory="observableArrayList">
-                          <String fx:value="Item 1" />
-                          <String fx:value="Item 2" />
-                          <String fx:value="Item 3" />
-                        </FXCollections>
-                      </items>
-                    </ChoiceBox>
-                    <Label layoutX="3.0" layoutY="3.0" text="Chromosome Type" />
+                    <VBox id="VBox" layoutY="3.0" spacing="5.0">
+                      <children>
+                        <Label text="Chromosome Type" />
+                        <ChoiceBox fx:id="ChromSelect" prefWidth="200.0">
+                          <items>
+                            <FXCollections fx:factory="observableArrayList">
+                              <String fx:value="Item 1" />
+                              <String fx:value="Item 2" />
+                              <String fx:value="Item 3" />
+                            </FXCollections>
+                          </items>
+                        </ChoiceBox>
+                        <Label text="Fitness Function" />
+                        <ChoiceBox fx:id="SelectedFitnessFunction" prefWidth="197.0">
+                          <items>
+                            <FXCollections fx:factory="observableArrayList">
+                              <String fx:value="Item 1" />
+                              <String fx:value="Item 2" />
+                              <String fx:value="Item 3" />
+                            </FXCollections>
+                          </items>
+                        </ChoiceBox>
+                        <Label text="Additional Stages" />
+                        <ListView fx:id="AvailStages" onMouseClicked="#toggleStage" prefHeight="393.0" prefWidth="200.0" />
+                      </children>
+                    </VBox>
                   </children>
                 </AnchorPane>
               </content>
             </TitledPane>
           </expandedPane>
           <panes>
-            <TitledPane fx:id="Props" animated="false" text="Properties Selection">
+            <TitledPane fx:id="Props" alignment="TOP_LEFT" animated="false" pickOnBounds="true" text="Properties Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <Label contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" prefWidth="112.0" text="Max Population Size" />
-                    <TextField fx:id="MaxPopTxt" layoutX="14.0" layoutY="30.0" prefWidth="181.0" promptText="Maximum Population Size" />
-                    <Label layoutX="14.0" layoutY="52.0" text="Mutation Rate" />
-                    <TextField fx:id="MutRate" layoutX="14.0" layoutY="68.0" prefWidth="181.0" promptText="Mutation Rate" />
-                    <TextField fx:id="MaxGen" layoutX="14.0" layoutY="106.0" prefWidth="181.0" promptText="Maximum Generations" />
-                    <Label fx:id="MaxGenLbll" layoutX="14.0" layoutY="90.0" text="Maximum Generations" />
-                    <Label layoutX="14.0" layoutY="128.0" text="Additional Parameters" />
-                    <TextArea fx:id="AddedParams" layoutX="14.0" layoutY="144.0" prefHeight="168.0" prefWidth="181.0" promptText="Enter additional parameters" wrapText="true" />
+                    <VBox id="VBox" prefHeight="516.0" prefWidth="200.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <children>
+                        <Label contentDisplay="CENTER" prefWidth="112.0" text="Max Population Size" />
+                        <TextField fx:id="MaxPopTxt" prefWidth="181.0" promptText="Maximum Population Size" />
+                        <Label text="Mutation Rate" />
+                        <TextField fx:id="MutRate" prefWidth="181.0" promptText="Mutation Rate" />
+                        <Label fx:id="MaxGenLbll" text="Maximum Generations" />
+                        <TextField fx:id="MaxGen" prefWidth="181.0" promptText="Maximum Generations" />
+                        <Label text="Additional Parameters" />
+                        <TextArea fx:id="AddedParams" prefHeight="168.0" prefWidth="181.0" promptText="Enter additional parameters" wrapText="true" />
+                      </children>
+                    </VBox>
                   </children>
                 </AnchorPane>
               </content>
@@ -85,7 +104,7 @@
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView fx:id="ExperimentQueue" prefHeight="496.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="ExperimentQueue" minHeight="-Infinity" minWidth="-Infinity" prefHeight="516.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   </children>
                 </AnchorPane>
               </content>
@@ -97,7 +116,7 @@
         </Accordion>
       </right>
       <top>
-        <HBox padding="$x1" prefHeight="20.0" prefWidth="1270.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
+        <HBox minHeight="-Infinity" minWidth="-Infinity" padding="$x1" pickOnBounds="false" prefHeight="0.0" prefWidth="0.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
           <children>
             <Button id="InitExperitment" fx:id="InitExperiment" mnemonicParsing="false" text="Initialize" />
             <Button fx:id="StartExperiment" mnemonicParsing="false" text="Start" />

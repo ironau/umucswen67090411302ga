@@ -41,6 +41,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import jenes.GeneticAlgorithm;
+import jenes.stage.AbstractStage;
 import jenes.utils.Random;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
@@ -58,12 +60,20 @@ public class GateController implements Initializable {
     private PluginManager pluginManager= ObjectFactory.newInstance().createManager();
     static final Logger log = java.util.logging.Logger.getLogger(GATE.class.getName()) ;
     private Map<String, Identity> publishedPlugins;
-    PluginRegistry plugReg = pluginManager.getRegistry();
-    ObservableList stageList;
-    ArrayList<String> selectedStageList = new ArrayList();
-    XYChart.Series chartDataMax = new XYChart.Series();
-    XYChart.Series chartDataMean = new XYChart.Series();
-    XYChart.Series chartDataMin = new XYChart.Series();
+    private PluginRegistry plugReg = pluginManager.getRegistry();
+    private ObservableList stageList;
+    private ArrayList<String> selectedStageList = new ArrayList();
+    private ArrayList<GeneticAlgorithm> experimentQueueList = new ArrayList();
+    private XYChart.Series chartDataMax = new XYChart.Series();
+    private XYChart.Series chartDataMean = new XYChart.Series();
+    private XYChart.Series chartDataMin = new XYChart.Series();
+    private ObservableList chromList;
+    private ObservableList fitnessFunctionList;
+    
+    long maxPopSize;
+    float mutationRate;
+    long maxGenerations;
+    
     
     @FXML
     ChoiceBox ChromSelect;
@@ -91,7 +101,8 @@ public class GateController implements Initializable {
     Button StartExperiment;
     @FXML
     Button AbortExperiment;
-    private ObservableList chromList;
+    @FXML
+    ChoiceBox SelectedFitnessFunction;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -122,12 +133,12 @@ public class GateController implements Initializable {
         log.info("configureButtons complete");
         configureGraph();
         log.info("configureGraph complete");
-        configureProperties();
-        log.info("configureProperties complete");
         configureStats();
         log.info("configureStats complete");
         configureOrdering();
         log.info("configureOrdering complete");
+        configureExperimentQueue();
+        log.info("configureExperimentQueue complete");
     }
 
     /**
@@ -148,7 +159,6 @@ public class GateController implements Initializable {
         gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Scaling"));
         gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Selector"));
         gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crowder"));
-        gaStages.addAll(configureExtensionPoint("jenes.population.Fitness"));
         stageList = FXCollections.observableArrayList(gaStages);
         AvailStages.setItems(stageList); 
         log.fine("tied the available stage plugins to the list view");
@@ -158,9 +168,18 @@ public class GateController implements Initializable {
         gaChromosomes.addAll(configureExtensionPoint("jenes.chromosome.Chromosome"));
         chromList = FXCollections.observableArrayList(gaChromosomes);
         ChromSelect.setItems(chromList); 
-        log.fine("tied the available stage plugins to the list view");
+        log.fine("tied the available chromosome plugins to the list view");
         log.exiting("configureStages", this.getClass().toString());
 
+        //fitnessFunctionList
+        //gaStages.addAll(configureExtensionPoint("jenes.population.Fitness"));
+        ArrayList gaFitnessFunctions = new ArrayList();
+        gaFitnessFunctions.addAll(configureExtensionPoint("jenes.population.Fitness"));
+        fitnessFunctionList = FXCollections.observableArrayList(gaFitnessFunctions);
+        SelectedFitnessFunction.setItems(fitnessFunctionList); 
+        log.fine("tied the available Fitness Function plugins to the list view");
+
+        log.exiting("configureStages", this.getClass().toString());
     }
     /**
      * 
@@ -221,22 +240,29 @@ public class GateController implements Initializable {
             
         }
     }
+    /**
+     * 
+     */
+    private void configureOrdering() {
+        log.info(this.getClass().getSimpleName()+"configureOrdering");
+        StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
+    }
 
+    /**
+     * 
+     */
+    private void configureExperimentQueue() {
+       log.info(this.getClass().getSimpleName()+"configureExperimentQueue");
+       ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
+       
+    }
     /**
      *
      */
     private void configureStats() {
         log.info(this.getClass().getSimpleName()+"configureStats");
     }
-
-    /**
-     * 
-     */
-    private void configureProperties() {
-        log.info(this.getClass().getSimpleName()+"configureProperties");
-    }
-    
-        /**
+     /**
      * This method configures logging for the application from the property file.
      */
     private void configureLogger() {
@@ -340,8 +366,4 @@ public class GateController implements Initializable {
             StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
             
         }
-
-    private void configureOrdering() {
-        StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
-    }
 }
