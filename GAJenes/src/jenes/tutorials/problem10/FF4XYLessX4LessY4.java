@@ -27,9 +27,9 @@ import jenes.population.Individual;
  * 
  * @since 2.0
  */
-public class FitnessFunction extends Fitness<DoubleChromosome> {
+public class FF4XYLessX4LessY4 extends Fitness<DoubleChromosome> {
 
-    public FitnessFunction(boolean... bis) {
+    public FF4XYLessX4LessY4(boolean... bis) {
         super(bis);
     }
 

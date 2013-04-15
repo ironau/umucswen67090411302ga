@@ -47,7 +47,7 @@ public class CrowdingGAExample {
         Individual<DoubleChromosome> sample = new Individual<DoubleChromosome>(new DoubleChromosome(CHROMOSOME_LENGTH, -5.12, 5.11));
         Population<DoubleChromosome> pop = new Population<DoubleChromosome>(sample, POPULATION_SIZE);
 
-        Fitness<DoubleChromosome> fit = new FitnessFunction(true);
+        Fitness<DoubleChromosome> fit = new FF4XYLessX4LessY4(true);
 
         deJongOperator(fit, pop);
         System.out.println("-------------");

@@ -1,4 +1,4 @@
-/*
+ /*
  * JENES
  * A time and memory efficient Java library for genetic algorithms and more 
  * Copyright (C) 2011 Intelligentia srl
@@ -705,7 +705,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
     /**
      * Invoked when a start ga event occurs. By default, no action is performed.
      * Override this method to make the <code>GeneticAlgorithm</code> subclass
-     * able to be notfied of the start event.
+     * able to be notified of the start event.
      *
      * @param time
      *            the start event time expressed in milliseconds
@@ -717,7 +717,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
     /**
      * Invoked when an init end ga event occurs. By default, no action is
      * performed. Override this method to make the <code>GeneticAlgorithm</code>
-     * subclass able to be notfied of the init event.
+     * subclass able to be notified of the init event.
      *
      * @param time
      *            the init event time expressed in milliseconds
@@ -729,7 +729,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
     /**
      * Invoked when a stop event occurs. By default, no action is performed.
      * Override this method to make the <code>GeneticAlgorithm</code> subclass
-     * able to be notfied of the stop event.
+     * able to be notified of the stop event.
      *
      * @param time
      *            the stop event time expressed in milliseconds
@@ -741,7 +741,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
     /**
      * Invoked when a generation ga end event occurs. By default, no action is
      * performed. Override this method to make the <code>GeneticAlgorithm</code>
-     * subclass able to be notfied of the generation event.
+     * subclass able to be notified of the generation event.
      *
      * @param time
      *            the generation event time expressed in milliseconds
@@ -752,7 +752,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
 
     /**
      * Evaluates the population. The method iterates the evaluation on each
-     * individual. Evalution is performed according to <code>fullEvaluationForced</code>
+     * individual. Evaluation is performed according to <code>fullEvaluationForced</code>
      * <p>
      *
      * @param population
@@ -986,16 +986,16 @@ public class GeneticAlgorithm<T extends Chromosome> {
     }
 
     /**
-     * Returns the current evaluation mode. By defualt it is false.
-     * @return true, if evaluation is referred to the whole popuation.
+     * Returns the current evaluation mode. By default it is false.
+     * @return true, if evaluation is referred to the whole population.
      */
     public boolean isFullEvaluationForced() {
         return this.fullEvaluationForced;
     }
 
     /**
-     * Sets the evalaution mode.
-     * @param flag - true if evaluation is referred to the whole popuation.
+     * Sets the evaluation mode.
+     * @param flag - true if evaluation is referred to the whole population.
      * False if evaluation is only referred to unevaluated individuals. By default it is false.
      */
     public void setFullEvaluationForced(boolean flag) {
@@ -1004,8 +1004,8 @@ public class GeneticAlgorithm<T extends Chromosome> {
 
     /**
      * Applies the elitism to the current population, according to the chosen
-     * strategy. This method is authomatically invoked by {@link #evolve()},
-     * and should not be explicitaly invoked.
+     * strategy. This method is automatically invoked by {@link #evolve()},
+     * and should not be explicitely invoked.
      */
     protected final void applyElitism() {
         int currentSize = currentPopulation.size();
