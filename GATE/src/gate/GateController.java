@@ -35,11 +35,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import jenes.utils.Random;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
@@ -59,6 +61,9 @@ public class GateController implements Initializable {
     PluginRegistry plugReg = pluginManager.getRegistry();
     ObservableList stageList;
     ArrayList<String> selectedStageList = new ArrayList();
+    XYChart.Series chartDataMax = new XYChart.Series();
+    XYChart.Series chartDataMean = new XYChart.Series();
+    XYChart.Series chartDataMin = new XYChart.Series();
     
     @FXML
     ChoiceBox ChromSelect;
@@ -191,6 +196,30 @@ public class GateController implements Initializable {
      */
     private void configureGraph() {
         log.info(this.getClass().getSimpleName()+"configureGraph");
+        chartDataMax.setName("Maximum Population Value");
+        chartDataMean.setName("Mean Population Value");
+        chartDataMin.setName("Min Population Value");
+        
+        CurProg.getData().add(chartDataMax);
+        CurProg.getData().add(chartDataMean);
+        CurProg.getData().add(chartDataMin);
+        
+        int oldMaxValue=10;
+        int oldMeanValue=4;
+        int oldMinValue =2;
+        for(int gen=1;gen<500;gen++){
+            Random ranGen = Random.getInstance();
+            int maxValue = Math.min(ranGen.nextInt(oldMaxValue,oldMaxValue+10),5000);
+            int meanValue = ranGen.nextInt(oldMeanValue-1, maxValue);
+            int minValue =ranGen.nextInt(oldMinValue-1, meanValue);
+            chartDataMax.getData().add(new XYChart.Data(gen,maxValue));
+            chartDataMean.getData().add(new XYChart.Data(gen,meanValue));
+            chartDataMin.getData().add(new XYChart.Data(gen,minValue));
+            oldMaxValue=maxValue;
+            oldMeanValue=Math.max(meanValue,4);
+            oldMinValue=Math.max(minValue,2);
+            
+        }
     }
 
     /**
