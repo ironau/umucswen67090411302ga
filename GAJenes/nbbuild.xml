@@ -86,6 +86,8 @@
             <attribute name="libraryID"/>
             <attribute name="pluginID"/>
             <attribute name="extensionClass" default="None"/>
+            <attribute name="chromosomeType" default="Any"/>
+            <attribute name="toolTip" default="No Information Available"/>
             <sequential>
                <echo message="The plugin class specified was @{pluginclass}"/>
                <echo message="The plugin location was @{pluginLocation}"/>
@@ -101,6 +103,8 @@
     &lt;extension plugin-id="@{extensionClass}" point-id="@{extensionClass}" id="@{pluginID}"&gt;
         &lt;parameter id="name" value="@{libraryID}"/&gt;
         &lt;parameter id="class" value="@{pluginclass}"/&gt;
+        &lt;parameter id="chromosome" value="@{chromosomeType}"/&gt;
+        &lt;parameter id="toolTip" value="@{toolTip}"/&gt;
     &lt;/extension&gt;
 &lt;/plugin&gt;
                  </echo>
@@ -121,6 +125,8 @@
             <attribute name="libraryID"/>
             <attribute name="pluginID"/>
             <attribute name="extensionClass" default="None"/>
+            <attribute name="chromosomeType" default="Any"/>
+            <attribute name="toolTip" default="No Information Available"/>
             <sequential>
                <echo message="The plugin class specified was @{pluginclass}"/>
                <echo message="The plugin location was @{pluginLocation}"/>
@@ -135,6 +141,8 @@
     &lt;extension-point id="@{pluginclass}"&gt;
         &lt;parameter-def id="class"/&gt;
         &lt;parameter-def id="name"/&gt;
+        &lt;parameter-def id="chromosome" multiplicity="none-or-one"/&gt;
+        &lt;parameter-def id="toolTip" multiplicity="none-or-one"/&gt;
     &lt;/extension-point&gt;
 &lt;/plugin&gt;
                  </echo>
@@ -169,7 +177,7 @@
 <!-- package predefined plugins -->
 
         <package-plugin pluginclass="jenes.stage.Sequence" pluginLocation="${dist.jar.dir}" libraryID="Sequence" 
-            pluginID="jenes.stage.Sequence" extensionClass="jenes.stage.AbstractStage"/>
+            pluginID="jenes.stage.Sequence" extensionClass="jenes.stage.AbstractStage" toolTip="a Generic Sequence stage"/>
         <package-plugin pluginclass="jenes.stage.Parallel" pluginLocation="${dist.jar.dir}" libraryID="Parallel" 
             pluginID="jenes.stage.Parallel" extensionClass="jenes.stage.AbstractStage"/>
         <package-plugin pluginclass="jenes.stage.Evaluator" pluginLocation="${dist.jar.dir}" libraryID="Evaluator" 
@@ -215,6 +223,6 @@
         <package-plugin pluginclass="jenes.stage.operator.common.TwoPointsCrossover" pluginLocation="${dist.jar.dir}" libraryID="TwoPointsCrossover" 
             pluginID="jenes.stage.operator.common.TwoPointsCrossover" extensionClass="jenes.stage.operator.Crossover"/>
         <package-plugin pluginclass="jenes.tutorials.problem10.FF4XYLessX4LessY4" pluginLocation="${dist.jar.dir}" libraryID="FF4XYLessX4LessY4" 
-            pluginID="jenes.tutorials.problem10.TwoPointsCrossover" extensionClass="jenes.population.Fitness"/>
+            pluginID="jenes.tutorials.problem10.TwoPointsCrossover" extensionClass="jenes.population.Fitness" chromosomeType="jenes.chromosome.DoubleChromosome" toolTip="Sovles the equation 4xy -x^4 -y^4.  Requires a DoubleChromosome."/>
     </target>
 </project>
