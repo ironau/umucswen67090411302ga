@@ -98,7 +98,7 @@
     &lt;runtime&gt;
         &lt;library id="@{libraryID}" path="/" type="code"/&gt;
     &lt;/runtime&gt;
-    &lt;extension plugin-id="@{extensionClass}" point-id="@{extensionID}" id="@{pluginID}"&gt;
+    &lt;extension plugin-id="@{extensionClass}" point-id="@{extensionClass}" id="@{pluginID}"&gt;
         &lt;parameter id="name" value="@{libraryID}"/&gt;
         &lt;parameter id="class" value="@{pluginclass}"/&gt;
     &lt;/extension&gt;
@@ -169,13 +169,13 @@
 <!-- package predefined plugins -->
 
         <package-plugin pluginclass="jenes.stage.Sequence" pluginLocation="${dist.jar.dir}" libraryID="Sequence" 
-            pluginID="jenes.stage.Sequence" extensionClass="jenes.stage.operator.AbstractStage"/>
+            pluginID="jenes.stage.Sequence" extensionClass="jenes.stage.AbstractStage"/>
         <package-plugin pluginclass="jenes.stage.Parallel" pluginLocation="${dist.jar.dir}" libraryID="Parallel" 
-            pluginID="jenes.stage.Parallel" extensionClass="jenes.stage.operator.AbstractStage"/>
+            pluginID="jenes.stage.Parallel" extensionClass="jenes.stage.AbstractStage"/>
         <package-plugin pluginclass="jenes.stage.Evaluator" pluginLocation="${dist.jar.dir}" libraryID="Evaluator" 
-            pluginID="jenes.stage.Evaluator" extensionClass="jenes.stage.operator.AbstractStage"/>
+            pluginID="jenes.stage.Evaluator" extensionClass="jenes.stage.AbstractStage"/>
         <package-plugin pluginclass="jenes.stage.BreakPoint" pluginLocation="${dist.jar.dir}" libraryID="BreakPoint" 
-            pluginID="jenes.stage.BreakPoint" extensionClass="jenes.stage.operator.AbstractStage"/>
+            pluginID="jenes.stage.BreakPoint" extensionClass="jenes.stage.AbstractStage"/>
         <package-plugin pluginclass="jenes.chromosome.BitwiseChromosome" pluginLocation="${dist.jar.dir}" libraryID="BitwiseChromosome" 
             pluginID="jenes.chromosome.BitwiseChromosome" extensionClass="jenes.chromosome.Chromosome"/>
         <package-plugin pluginclass="jenes.chromosome.BooleanChromosome" pluginLocation="${dist.jar.dir}" libraryID="BooleanChromosome" 
