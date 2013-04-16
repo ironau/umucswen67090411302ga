@@ -53,6 +53,7 @@ public class GATE extends Application {
 //            Parent page= FXMLLoader.load(getClass().getResource("GATE.fxml"));
             AnchorPane page = (AnchorPane) FXMLLoader.load(GATE.class.getResource("GATE.fxml"));
             Scene scene = new Scene(page);
+            
             stage.setScene(scene);
             stage.setTitle("Gentic Algorithm Testing Envirionment");
             stage.show();

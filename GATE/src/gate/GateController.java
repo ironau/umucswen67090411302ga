@@ -14,35 +14,22 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import jenes.GeneticAlgorithm;
-import jenes.stage.AbstractStage;
+import jenes.population.Population;
 import jenes.utils.Random;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
@@ -50,7 +37,6 @@ import org.java.plugin.PluginManager;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.ExtensionPoint;
 import org.java.plugin.registry.Identity;
-import org.java.plugin.registry.PluginAttribute;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.registry.PluginRegistry;
 import org.java.plugin.standard.StandardPluginLocation;
@@ -69,6 +55,7 @@ public class GateController implements Initializable {
     private XYChart.Series chartDataMin = new XYChart.Series();
     private ObservableList chromList;
     private ObservableList fitnessFunctionList;
+    private Population.Statistics stats;
     
     long maxPopSize;
     float mutationRate;
@@ -261,6 +248,7 @@ public class GateController implements Initializable {
      */
     private void configureStats() {
         log.info(this.getClass().getSimpleName()+"configureStats");
+        
     }
      /**
      * This method configures logging for the application from the property file.
@@ -365,5 +353,79 @@ public class GateController implements Initializable {
             selectedStageList.addAll(selectedStage);
             StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
             
+        }
+        
+     /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void ChromosomeSelected() {
+            ObservableList selectedChromosome = (ObservableList) ChromSelect.getSelectionModel().getSelectedItem();
+            log.fine("Event: a chromosome was selected " + selectedChromosome);
+            //todo: Filter Stages and FitnessFunciton list to only those tha support this chromosome or ANY
+        }
+        /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void FitnessFunctionSelected() {
+            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
+            log.fine("Event: a chromosome was selected " + selectedFF);
+            //todo: filter the Stage available list to the chromosome required by this fitness function or a stage that can use Any chromosome
+            //todo: Set the chromosome list to the required chromosome it not yet selected.
+            //todo: Display warning if the chromosome type for the fitness function doesn't match the type selected in chromosome selection.  I'm not sure this will every happen.
+            
+            
+        }
+
+        /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void orderStages(ActionEvent event) {
+            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
+            log.fine("Event: a chromosome was selected " + selectedFF);
+            //todo: set the order to the same as the list.
+            
+            
+        }
+
+                /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void InitializeExperiment(ActionEvent event) {
+            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
+            log.fine("Event: a chromosome was selected " + selectedFF);
+            //todo: Add the algorithm as configured to the Experiment queue.
+            
+            
+        }
+
+                /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void StartExperiment(ActionEvent event) {
+            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
+            log.fine("Event: a chromosome was selected " + selectedFF);
+            //Start the first experiment in the queue
+            
+            
+        }
+    /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void AbortExperiment(ActionEvent event) {
+            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
+            log.fine("Event: a chromosome was selected " + selectedFF);
+            //todo: Stop the current experiment.
         }
 }
