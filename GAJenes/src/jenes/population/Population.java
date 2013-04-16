@@ -904,11 +904,11 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
 
     /**
      * The <code>Population.Statistics</code> class is only responsible for storing statistics
-     * about a population. As each population can contains legal and illegal individials, it holds
-     * the individuals with the higher and lower fitness (a deep-cloning is maked to store these individuals so they don't
+     * about a population. As each population can contains legal and illegal individuals, it holds
+     * the individuals with the higher and lower fitness (a deep-cloning is marked to store these individuals so they don't
      * change if the source population does),
      * the average and deviation values both regard legal individuals and illegal ones.
-     * Esamples of use are showed below.
+     * Examples of use are showed below.
      * <p><blockquote><pre>
      * Population.Statistics stat = a_population.getStatistics();
      * </pre></blockquote>
