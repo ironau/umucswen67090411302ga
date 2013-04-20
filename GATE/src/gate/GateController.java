@@ -28,6 +28,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import jenes.GeneticAlgorithm;
 import jenes.population.Population;
 import jenes.utils.Random;
@@ -380,19 +386,42 @@ public class GateController implements Initializable {
             
         }
 
-        /**
+                        /**
      * This is the even handler for selecting a stage.
      * Currently this doesn't work.
      * @param event 
      */
-        public void orderStages(ActionEvent event) {
-            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
-            log.fine("Event: a chromosome was selected " + selectedFF);
-            //todo: set the order to the same as the list.
-            
-            
+        public void MoveStageUp(ActionEvent event){
+            String selected = (String) StageOrd.getSelectionModel().getSelectedItem();
+            if(selected != null){
+                int positionOfSelected = selectedStageList.indexOf(selected);
+                log.fine(selected.toString() + "started in possition: " + (positionOfSelected+1));
+                selectedStageList.set(positionOfSelected, selectedStageList.get(positionOfSelected-1));
+                selectedStageList.set(positionOfSelected-1,selected);
+                StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
+                StageOrd.getSelectionModel().select(positionOfSelected-1);
+            }
+            event.consume();
         }
-
+        
+                        /**
+     * This is the even handler for selecting a stage.
+     * Currently this doesn't work.
+     * @param event 
+     */
+        public void MoveStageDown(ActionEvent event){
+            String selected = (String) StageOrd.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                int positionOfSelected = selectedStageList.indexOf(selected);
+                log.fine(selected.toString() + "started in possition: " + (positionOfSelected+1));
+                selectedStageList.set(positionOfSelected, selectedStageList.get(positionOfSelected+1));
+                selectedStageList.set(positionOfSelected+1,selected);
+                StageOrd.setItems(FXCollections.observableArrayList(selectedStageList));
+                StageOrd.getSelectionModel().select(positionOfSelected+1);
+            }
+            event.consume();
+        }
+        
                 /**
      * This is the even handler for selecting a stage.
      * Currently this doesn't work.

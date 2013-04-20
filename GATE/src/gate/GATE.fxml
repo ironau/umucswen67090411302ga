@@ -34,6 +34,50 @@
       <right>
         <Accordion fx:id="Config" blendMode="SOFT_LIGHT" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="TOP_LEFT">
           <expandedPane>
+            <TitledPane id="StageOrd" fx:id="x2" animated="false" text="Stage Ordering">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <VBox id="VBox" alignment="CENTER" prefHeight="516.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <children>
+                        <HBox id="HBox" alignment="CENTER" spacing="5.0">
+                          <children>
+                            <Button fx:id="UpButton" mnemonicParsing="false" onAction="#MoveStageUp" text="Up" />
+                            <Button fx:id="DownButton" mnemonicParsing="false" onAction="#MoveStageDown" text="Down" />
+                          </children>
+                          <padding>
+                            <Insets bottom="4.0" left="4.0" right="15.0" top="4.0" />
+                          </padding>
+                        </HBox>
+                        <ListView fx:id="StageOrd" prefHeight="487.0" prefWidth="200.0" />
+                      </children>
+                    </VBox>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
+            <TitledPane fx:id="Props" alignment="TOP_LEFT" animated="false" pickOnBounds="true" text="Properties Selection">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <VBox id="VBox" prefHeight="516.0" prefWidth="200.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <children>
+                        <Label contentDisplay="CENTER" prefWidth="112.0" text="Max Population Size" />
+                        <TextField fx:id="MaxPopTxt" prefWidth="181.0" promptText="Maximum Population Size" />
+                        <Label text="Mutation Rate" />
+                        <TextField fx:id="MutRate" prefWidth="181.0" promptText="Mutation Rate" />
+                        <Label fx:id="MaxGenLbll" text="Maximum Generations" />
+                        <TextField fx:id="MaxGen" prefWidth="181.0" promptText="Maximum Generations" />
+                        <Label text="Additional Parameters" />
+                        <TextArea fx:id="AddedParams" prefHeight="168.0" prefWidth="181.0" promptText="Enter additional parameters" wrapText="true" />
+                      </children>
+                    </VBox>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
             <TitledPane fx:id="Stage" animated="false" text="Stage Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -68,38 +112,7 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-          </expandedPane>
-          <panes>
-            <TitledPane fx:id="Props" alignment="TOP_LEFT" animated="false" pickOnBounds="true" text="Properties Selection">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <VBox id="VBox" prefHeight="516.0" prefWidth="200.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <children>
-                        <Label contentDisplay="CENTER" prefWidth="112.0" text="Max Population Size" />
-                        <TextField fx:id="MaxPopTxt" prefWidth="181.0" promptText="Maximum Population Size" />
-                        <Label text="Mutation Rate" />
-                        <TextField fx:id="MutRate" prefWidth="181.0" promptText="Mutation Rate" />
-                        <Label fx:id="MaxGenLbll" text="Maximum Generations" />
-                        <TextField fx:id="MaxGen" prefWidth="181.0" promptText="Maximum Generations" />
-                        <Label text="Additional Parameters" />
-                        <TextArea fx:id="AddedParams" prefHeight="168.0" prefWidth="181.0" promptText="Enter additional parameters" wrapText="true" />
-                      </children>
-                    </VBox>
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
-            <fx:reference source="Stage" />
-            <TitledPane id="StageOrd" animated="false" text="Stage Ordering">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ListView fx:id="StageOrd" prefHeight="496.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
+            <fx:reference source="x2" />
             <TitledPane id="AcrdPanQueue" animated="false" text="Experiment Queue">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
