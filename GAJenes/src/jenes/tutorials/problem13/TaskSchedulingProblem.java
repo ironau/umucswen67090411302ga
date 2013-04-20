@@ -88,7 +88,7 @@ public class TaskSchedulingProblem {
 
         //...get statistics
         Statistics<ObjectChromosome> popStats = ga.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algoStats = ga.getStatistics();
+        jenes.statistics.Statistics algoStats = ga.getStatistics();
 
         Group<ObjectChromosome> legals = popStats.getGroup(Population.LEGALS);
 

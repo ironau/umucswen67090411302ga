@@ -29,6 +29,7 @@ import jenes.population.Population;
 import jenes.population.Population.Statistics.Group;
 import jenes.stage.AbstractStage;
 import jenes.stage.operator.common.TournamentSelector;
+import jenes.statistics.Statistics;
 import jenes.tutorials.utils.Utils;
 
 
@@ -113,7 +114,7 @@ public class TravelSalesmanProblem {
         algorithm.evolve();
         
         Population.Statistics stats = algorithm.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algostats = algorithm.getStatistics();
+        Statistics algostats = algorithm.getStatistics();
         
         Group legals = stats.getGroup(Population.LEGALS);
         
@@ -154,7 +155,7 @@ public class TravelSalesmanProblem {
         sga.evolve();
         
         Population.Statistics stats = sga.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algostats = sga.getStatistics();
+        Statistics algostats = sga.getStatistics();
         
         Group legals = stats.getGroup(Population.LEGALS);
         

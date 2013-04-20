@@ -27,6 +27,7 @@ import jenes.population.Individual;
 import jenes.population.Population;
 import jenes.stage.AbstractStage;
 import jenes.stage.operator.common.TournamentSelector;
+import jenes.statistics.Statistics;
 import jenes.tutorials.utils.Utils;
 
 
@@ -110,7 +111,7 @@ public class TravelSalesmanProblem {
         algorithm.evolve();
         
         Population.Statistics stats = algorithm.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algostats = algorithm.getStatistics();
+        Statistics algostats = algorithm.getStatistics();
         
         System.out.println(stats.getLegalHighestIndividual().getChromosome() );
         System.out.println(stats.getLegalHighestIndividual());
@@ -147,7 +148,7 @@ public class TravelSalesmanProblem {
         sga.evolve();
         
         Population.Statistics stats = sga.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algostats = sga.getStatistics();
+        Statistics algostats = sga.getStatistics();
         
         System.out.println(stats.getLegalHighestIndividual().getChromosome() );
         System.out.println(stats.getLegalHighestIndividual());

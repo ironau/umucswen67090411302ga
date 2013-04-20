@@ -101,7 +101,7 @@ public class OCProblem {
         ga.evolve();
         
         Statistics stats = ga.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algostats = ga.getStatistics();
+        jenes.statistics.Statistics algostats = ga.getStatistics();
 
         Group legals = stats.getGroup(Population.LEGALS);
         

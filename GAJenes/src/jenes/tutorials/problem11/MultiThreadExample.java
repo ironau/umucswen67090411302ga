@@ -19,13 +19,13 @@
 package jenes.tutorials.problem11;
 
 import jenes.GeneticAlgorithm;
-import jenes.GeneticAlgorithm.Statistics;
 import jenes.algorithms.SimpleGA;
 import jenes.chromosome.BitwiseChromosome;
 import jenes.chromosome.codings.IntCoding;
 import jenes.population.Individual;
 import jenes.population.Population;
 import jenes.population.Population.Statistics.Group;
+import jenes.statistics.Statistics;
 import jenes.tutorials.utils.Utils;
 import jenes.utils.multitasking.MultiThreadEvaluator;
 

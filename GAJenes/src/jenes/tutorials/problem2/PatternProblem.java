@@ -90,7 +90,7 @@ public class PatternProblem implements GenerationEventListener<IntegerChromosome
         algorithm.evolve();
         
         Population.Statistics stats = algorithm.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algostats = algorithm.getStatistics();
+        jenes.statistics.Statistics algostats = algorithm.getStatistics();
         
         System.out.println();
         System.out.print("Target:[");

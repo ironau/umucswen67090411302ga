@@ -22,6 +22,7 @@ import jenes.population.Fitness;
 import jenes.utils.Random;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.concurrent.Task;
 
 import jenes.chromosome.Chromosome;
 import jenes.population.Individual;
@@ -30,7 +31,7 @@ import jenes.population.Population;
 import jenes.stage.AbstractStage;
 import jenes.stage.Sequence;
 import jenes.stage.StageException;
-import jenes.statistics.StatisticsLogger.LoggableStatistics;
+import jenes.statistics.Statistics;
 import jenes.utils.multitasking.Runner;
 
 /**
@@ -181,7 +182,7 @@ import jenes.utils.multitasking.Runner;
  * @version 2.0
  * @since 1.0
  */
-public class GeneticAlgorithm<T extends Chromosome> {
+public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
     /** The default maximum number of generations */
     public static final int DEFAULT_GENERATION_LIMIT = 100;
@@ -197,7 +198,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
      * The statistics object responsible for storing statistics about this
      * genetic algorithm.
      */
-    protected Statistics statistics = null;
+    public Statistics statistics = null;
     /** Current generation count */
     protected int generation = 0;
     /** Rate of randomization of initial population */
@@ -210,6 +211,12 @@ public class GeneticAlgorithm<T extends Chromosome> {
      * @since 2.0
      */
     private Runner runner;
+
+    @Override
+    protected Object call() throws Exception {
+        evolve(true);
+        return statistics;
+    }
 
     /** The elitism strategy enumeration */
     public static enum ElitismStrategy {
@@ -554,7 +561,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
         final int limit = this.generationLimit;
         for (generation = 0; generation < limit && !end(); generation++) {
 
-            this.statistics.generations = generation + 1;
+            statistics.setGenerations(generation+1);
             try {
                 currentPopulation = history[0];
                 nextPopulation = history[this.historySize - 1];
@@ -575,7 +582,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
                 }
                 history[0] = nextPopulation;
             } catch (StageException e) {
-                this.statistics.exceptionTerminated = true;
+                statistics.setExceptionTerminated(true);
                 throw new AlgorithmException(
                         "An error occured during the ga evolution", e);
             }
@@ -583,7 +590,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
                 this.applyElitism();
             }
             final long now = System.currentTimeMillis();
-            this.statistics.generationEndTimes[generation] = now;
+            statistics.setGenerationEndTimes(generation, now);
             this.onGeneration(now);
             for (GenerationEventListener gel : generationListeners) {
                 gel.onGeneration(this, now);
@@ -635,7 +642,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
         this.generation = 0;
 
         long now = System.currentTimeMillis();
-        this.statistics.startTime = now;
+        statistics.setStartTime(now);
 
 
         this.onStart(now);
@@ -665,13 +672,13 @@ public class GeneticAlgorithm<T extends Chromosome> {
         }
 
         now = System.currentTimeMillis();
-        this.statistics.initTime = now;
+        statistics.setInitTime(now);
 
         if (this.runner != null) {
             this.runner.onInit();
         }
 
-        this.statistics.randomSeed = this.random.getSeed();
+        statistics.setRandomSeed(this.random.getSeed());
 
         this.onInit(now);
         for (AlgorithmEventListener<T> ael : algorithmListeners) {
@@ -689,8 +696,8 @@ public class GeneticAlgorithm<T extends Chromosome> {
         this.body.dispose();
 
         long now = System.currentTimeMillis();
-        this.statistics.stopTime = now;
-        this.statistics.executionTime = now - this.statistics.startTime;
+        statistics.setStopTime(now);
+        statistics.setExecutionTime(now - statistics.getStartTime());
 
         this.onStop(now);
         for (AlgorithmEventListener<T> ael : algorithmListeners) {
@@ -789,7 +796,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
         }
 
         long now = System.currentTimeMillis();
-        this.statistics.fitnessEvalStageBegin[this.generation] = now;
+        statistics.setFitnessEvalStageBegin(this.generation,now);
 
         for (Individual individual : population) {
             if (!individual.isEvaluated() || forced || this.isFitnessChanged()) {
@@ -799,7 +806,7 @@ public class GeneticAlgorithm<T extends Chromosome> {
                     this.evaluateIndividual(individual);
                 }
 
-                this.statistics.fitnessEvaluationNumbers++;
+                statistics.incrementFitnessEvaluationNumbers();
             }
         }
 
@@ -808,8 +815,8 @@ public class GeneticAlgorithm<T extends Chromosome> {
         }
 
         now = System.currentTimeMillis();
-        this.statistics.fitnessEvalStageEnd[this.generation] = now;
-        this.statistics.timeSpentInFitnessEval += now - statistics.fitnessEvalStageBegin[this.generation];
+        statistics.setFitnessEvalStageEnd(this.generation,now);
+        statistics.addTimeSpentInFitnessEval(now - statistics.getFitnessEvalStageBegin(this.generation));
 
     }
 
@@ -1182,19 +1189,17 @@ public class GeneticAlgorithm<T extends Chromosome> {
     }
 
     /**
-     * Returns algoritm statistics at the moment of invokation.
+     * Returns Algorithm statistics at the moment of invocation.
      * <p>
      *
      * @return an object containing the algorithm statistics
      */
     public final Statistics getStatistics() {
-        Statistics stats = new Statistics(statistics.generationLimit);
-        this.updateStatistics(stats);
-        return stats;
+        return statistics;
     }
 
     /**
-     * Updates the algoritm statistics at the moment of invokation.
+     * Updates the Algorithm statistics at the moment of invocation.
      * <p>
      *
      * @param stats
@@ -1209,224 +1214,5 @@ public class GeneticAlgorithm<T extends Chromosome> {
     @Override
     public final String toString() {
         return (getClass().getName());
-    }
-
-    /**
-     * This class provides some basic statistics regarding the algorithm
-     * execution.
-     */
-    public static final class Statistics extends LoggableStatistics {
-
-        private long startTime;
-        private long stopTime;
-        private long initTime;
-        private long executionTime;
-        private int generations;
-        private int generationLimit;
-        private long[] generationEndTimes;
-        private boolean exceptionTerminated;
-        private int fitnessEvaluationNumbers;
-        private long[] fitnessEvalStageBegin;
-        private long[] fitnessEvalStageEnd;
-        private long timeSpentInFitnessEval;
-        private long randomSeed;
-
-        /**
-         * Constructs a new GeneticAlgorithm.Statistics.
-         * <p>
-         *
-         * @param generationLimit
-         *            the max number of generations
-         */
-        private Statistics(final int generationLimit) {
-            this.generationLimit = generationLimit;
-            this.generationEndTimes = new long[generationLimit];
-            this.fitnessEvalStageBegin = new long[generationLimit];
-            this.fitnessEvalStageEnd = new long[generationLimit];
-            this.exceptionTerminated = false;
-        }
-
-        /**
-         * Returns the algorithm starting time.
-         * <p>
-         *
-         * @return the starting time expressed in milliseconds
-         */
-        public final long getStartTime() {
-            return this.startTime;
-        }
-
-        /**
-         * Returns the algorithm stoppping time.
-         * <p>
-         *
-         * @return the stopping time expressed in milliseconds
-         */
-        public final long getStopTime() {
-            return this.stopTime;
-        }
-
-        /**
-         * Returns the algorithm init time.
-         * <p>
-         *
-         * @return the init time expressed in milliseconds
-         */
-        public final long getInitTime() {
-            return this.initTime;
-        }
-
-        /**
-         * Returns the algorithm execution time.
-         * <p>
-         *
-         * @return the algorithm execution time expressed in milliseconds
-         */
-        public final long getExecutionTime() {
-            return this.executionTime;
-        }
-
-        /**
-         * Returns the last generation counter.
-         * <p>
-         *
-         * @return the generation counter
-         */
-        public final int getGenerations() {
-            return this.generations;
-        }
-
-        /**
-         * Returns the algorithm generation limit.
-         * <p>
-         *
-         * @return the generations limit
-         */
-        public final int getGenerationLimit() {
-            return this.generationLimit;
-        }
-
-        /**
-         * Returns the generation end time of the specified generation.
-         * <p>
-         *
-         * @param gen
-         *            the generation with end time is desidered
-         * @return the end time of the generation gen
-         */
-        public final long getGenerationEndTime(final int gen) {
-            return this.generationEndTimes[gen];
-        }
-
-        /**
-         * Says if an exception terminated the evolution.
-         * <p>
-         *
-         * @return true if an exception terminated the evolution, false
-         *         otherwise
-         */
-        public final boolean isExceptionTerminated() {
-            return this.exceptionTerminated;
-        }
-
-        /**
-         * Returns the fitness evaluation number.
-         * <p>
-         *
-         * @return the fitness evaluation number
-         */
-        public int getFitnessEvaluationNumbers() {
-            return fitnessEvaluationNumbers;
-        }
-
-        /**
-         * Returns the timestamp of the last fitness evaluation stage begin.
-         * <p>
-         *
-         * @return the starting time expressed in milliseconds
-         */
-        public long getFitnessEvalStageBegin() {
-            int last = this.generations - 1;
-            return last >= 0 ? this.fitnessEvalStageBegin[this.generations - 1] : -1;
-        }
-
-        /**
-         * Returns the timestamp (in millisecond) in wich the fitness evaluation 
-         * has begin for the given generation.
-         * <p>
-         * 
-         * @param the generation to query for starting from <tt>1</tt>
-         *
-         * @return the starting time timestamp expressed in milliseconds
-         */
-        public long getFitnessEvalStageBegin(int gen) {
-            return this.fitnessEvalStageBegin[gen - 1];
-        }
-
-        /**
-         * Returns the timestamp of the last fitness evaluation stage end.
-         * <p>
-         *
-         * @return the end time timestamp expressed in milliseconds
-         */
-        public long getFitnessEvalStageEnd() {
-            int last = this.generations - 1;
-            return last >= 0 ? this.fitnessEvalStageEnd[this.generations - 1] : -1;
-        }
-
-        /**
-         * Returns the timestamp at wich the fitness evaluation stage has ended
-         * for the given generation.
-         * <p>
-         * @param the generation to query for starting from <tt>1</tt>
-         *
-         * @return the stopping time expressed in milliseconds
-         */
-        public long getFitnessEvalStageEnd(int gen) {
-            return this.fitnessEvalStageEnd[gen - 1];
-        }
-
-        /**
-         * Returns the current time spent in fitness evaluation.
-         * <p>
-         *
-         * @return the execution time expressed in milliseconds
-         */
-        public long getTimeSpentForFitnessEval() {
-            return timeSpentInFitnessEval;
-        }
-
-        /**
-         * Returns the random seed used during the execution of the algorithm instance
-         * @return 
-         * 
-         * @see Random#getSeed()
-         */
-        public long getRandomSeed() {
-            return randomSeed;
-        }
-
-        /**
-         * Copies the statistics data to the target object.
-         * <p>
-         *
-         * @param stats
-         *            the statistics object to be filled
-         */
-        private void copyTo(final Statistics stats) {
-            stats.initTime = this.initTime;
-            stats.startTime = this.startTime;
-            stats.stopTime = this.stopTime;
-            stats.executionTime = this.executionTime;
-            stats.generationLimit = this.generationLimit;
-            stats.generations = this.generations;
-            stats.fitnessEvaluationNumbers = this.fitnessEvaluationNumbers;
-
-            stats.timeSpentInFitnessEval = this.timeSpentInFitnessEval;
-            stats.randomSeed = this.randomSeed;
-            System.arraycopy(this.fitnessEvalStageBegin, 0, stats.fitnessEvalStageBegin, 0, this.fitnessEvalStageBegin.length);
-            System.arraycopy(this.fitnessEvalStageEnd, 0, stats.fitnessEvalStageEnd, 0, this.fitnessEvalStageEnd.length);
-            System.arraycopy(this.generationEndTimes, 0, stats.generationEndTimes, 0, this.generationEndTimes.length);
-        }
     }
 }

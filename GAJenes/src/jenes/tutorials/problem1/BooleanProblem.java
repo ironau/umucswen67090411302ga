@@ -28,6 +28,7 @@ import jenes.stage.AbstractStage;
 import jenes.stage.operator.common.OnePointCrossover;
 import jenes.stage.operator.common.SimpleMutator;
 import jenes.stage.operator.common.TournamentSelector;
+import jenes.statistics.Statistics;
 import jenes.tutorials.utils.Utils;
 
 /**
@@ -88,7 +89,7 @@ public class BooleanProblem {
         ga.evolve();
         
         Population.Statistics stats = ga.getCurrentPopulation().getStatistics();
-        GeneticAlgorithm.Statistics algostats = ga.getStatistics();
+        Statistics algostats = ga.getStatistics();
         
         System.out.println("Objective: " + (fit.getBiggerIsBetter()[0] ? "Max! (All true)" : "Min! (None true)"));
         System.out.println();
