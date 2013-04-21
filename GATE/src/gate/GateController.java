@@ -14,6 +14,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -35,10 +36,12 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import jenes.GeneticAlgorithm;
+import jenes.population.Fitness;
 import jenes.population.Population;
 import jenes.utils.Random;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
+import org.java.plugin.PluginLifecycleException;
 import org.java.plugin.PluginManager;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.ExtensionPoint;
@@ -96,6 +99,8 @@ public class GateController implements Initializable {
     Button AbortExperiment;
     @FXML
     ChoiceBox SelectedFitnessFunction;
+    @FXML
+    Label MessageBar;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -191,7 +196,6 @@ public class GateController implements Initializable {
             PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
             log.log(Level.INFO, "Loading the stage plugin called {0}", ext.getParameter("name").valueAsString());
             stageGatherer.add(ext.getParameter("name").valueAsString());
-            
             // These lines will likely have to move into the GA configuring method triggered by the Initialize Button
             ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
             try {
@@ -427,13 +431,26 @@ public class GateController implements Initializable {
      * Currently this doesn't work.
      * @param event 
      */
-        public void InitializeExperiment(ActionEvent event) {
-            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
-            log.fine("Event: a chromosome was selected " + selectedFF);
-            //todo: Add the algorithm as configured to the Experiment queue.
+        public void InitializeExperiment(ActionEvent event) throws PluginLifecycleException, Exception {
+            MessageBar.setText("");
+            StringBuffer msg = new StringBuffer("This is an error message");
+            if(!checkSelecitons(msg)){
+                MessageBar.setText(msg.toString());
+                return;
+            }
+            createPopulation();
+            String selectedFF = (String) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
+            if (selectedFF == null) {
+                Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null);
+                throw new Exception("No Fitness Function was Selected");
+            }
+            Fitness ff = CreateFitnessFuction(selectedFF);
+            log.fine("Fitness Function " + selectedFF + " is loaded");
+            assert ff != null :"The Fitness function was never found";
+            GeneticAlgorithm ga = new GeneticAlgorithm(ff);
+            addStages(ga);
             
-            
-        }
+    }
 
                 /**
      * This is the even handler for selecting a stage.
@@ -457,4 +474,69 @@ public class GateController implements Initializable {
             log.fine("Event: a chromosome was selected " + selectedFF);
             //todo: Stop the current experiment.
         }
+
+    private Fitness CreateFitnessFuction(String selectedFF) {
+        Class pluginClass = null;
+        //get the descriptor for the Fitness Extension Point
+        PluginDescriptor fitnessExtensionType = plugReg.getPluginDescriptor("jenes.population.Fitness");
+        log.fine("Fitness function extension point is " + fitnessExtensionType.getPluginClassName());
+        //get the plugins that contain this extension point.
+        ExtensionPoint extPointAbstractStages = plugReg.getExtensionPoint(fitnessExtensionType.getId(), "jenes.population.Fitness");
+        log.fine("Fitness function extension point is " + extPointAbstractStages.toString());
+        //find the extension point that has the name selectedFF
+        Collection<Extension> theListOfFitnessFunctions = extPointAbstractStages.getConnectedExtensions();
+        log.fine("The list of FitenssFunctions is " + Integer.toString(theListOfFitnessFunctions.size()));
+        for (Iterator it = theListOfFitnessFunctions.iterator(); it.hasNext();){
+            Extension ext = (Extension) it.next();
+            log.fine("Looking for this FitnessFunction: " + selectedFF + " Found this fitness funciton: "+ext.getParameter("name").toString());
+            if(selectedFF.equals(ext.getParameter("name").rawValue() )){
+                //Ensure the plugin is active
+//                    pluginManager.activatePlugin(ext.getDeclaringPluginDescriptor().getId());
+                // Get the specific class loader for this set or plugins.
+                ClassLoader classLoader = pluginManager.getPluginClassLoader(ext.getDeclaringPluginDescriptor());
+                try {
+                    pluginClass = classLoader.loadClass(ext.getParameter("class").valueAsString());
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    return (Fitness) pluginClass.newInstance();
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+    }
+
+    private void addStages(GeneticAlgorithm ga) {
+        
+    }
+
+    private boolean checkSelecitons(StringBuffer msg) {
+        //empty the parameter then recreate it.
+        msg.delete(0,msg.capacity());
+        msg.append("The following Selections Must Be Made: ");
+        boolean allSelected = true;
+        if (ChromSelect.getSelectionModel().getSelectedItem() == null){
+            msg.append(" Chomosome Type ");
+            allSelected = false;
+        }
+        if (SelectedFitnessFunction.getSelectionModel().getSelectedItem() == null){
+            msg.append(" Fitness Function ");
+            allSelected = false;
+        }
+        if (selectedStageList.size() >0){
+            msg.append(" Additional Stages ");
+            allSelected = false;
+        }
+        log.fine(msg.toString());
+        return allSelected;
+    }
+
+    private void createPopulation() {
+
+    }
 }

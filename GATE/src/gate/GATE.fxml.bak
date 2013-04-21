@@ -16,7 +16,7 @@
         <TextArea fx:id="RunningLog" editable="false" prefWidth="200.0" text="Running Statistics will be displayed here" />
       </bottom>
       <center>
-        <LineChart fx:id="CurProg" minHeight="-Infinity" minWidth="-Infinity" title="Current Progress" BorderPane.alignment="TOP_LEFT">
+        <LineChart fx:id="CurProg" minHeight="-Infinity" minWidth="-Infinity" title="" BorderPane.alignment="TOP_LEFT">
           <xAxis>
             <NumberAxis side="BOTTOM" />
           </xAxis>
@@ -38,7 +38,7 @@
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <VBox id="VBox" alignment="CENTER" prefHeight="516.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <VBox id="VBox" alignment="CENTER" prefHeight="516.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
                       <children>
                         <HBox id="HBox" alignment="CENTER" spacing="5.0">
                           <children>
@@ -49,7 +49,7 @@
                             <Insets bottom="4.0" left="4.0" right="15.0" top="4.0" />
                           </padding>
                         </HBox>
-                        <ListView fx:id="StageOrd" onDragDetected="#orderStartStageDrag" onDragDropped="#orderStageDragged" onDragEntered="#orderStageDragEntered" onDragOver="#orderStageDragOver" prefHeight="487.0" prefWidth="200.0" />
+                        <ListView fx:id="StageOrd" prefHeight="487.0" prefWidth="200.0" />
                       </children>
                     </VBox>
                   </children>
@@ -131,9 +131,10 @@
       <top>
         <HBox minHeight="-Infinity" minWidth="-Infinity" padding="$x1" pickOnBounds="false" prefHeight="0.0" prefWidth="0.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
           <children>
-            <Button id="InitExperitment" fx:id="InitExperiment" mnemonicParsing="false" text="Initialize" />
-            <Button fx:id="StartExperiment" mnemonicParsing="false" text="Start" />
-            <Button fx:id="AbortExperiment" mnemonicParsing="false" text="Abort" />
+            <Button id="InitExperitment" fx:id="InitExperiment" mnemonicParsing="false" onAction="#InitializeExperiment" text="Initialize" />
+            <Button fx:id="StartExperiment" mnemonicParsing="false" onAction="#StartExperiment" text="Start" />
+            <Button fx:id="AbortExperiment" mnemonicParsing="false" onAction="#AbortExperiment" text="Abort" />
+            <Label id="ErrorMsg" fx:id="MessageBar" prefWidth="861.0" />
           </children>
         </HBox>
       </top>
