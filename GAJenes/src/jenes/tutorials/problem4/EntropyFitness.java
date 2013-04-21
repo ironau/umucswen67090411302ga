@@ -59,4 +59,19 @@ public class EntropyFitness extends Fitness<DoubleChromosome> {
 
         individual.setScore(entropy);
     }
+
+    @Override
+    public Fitness<DoubleChromosome> createInstance() {
+        return this;
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        
+    }
+
+    @Override
+    protected void doStop() throws Exception {
+        
+    }
 }

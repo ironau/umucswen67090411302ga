@@ -71,6 +71,19 @@ public class NumericCrossover {
                 
                 individual.setScore(s);
             }
+
+            @Override
+            public Fitness createInstance() {
+                return this;
+            }
+
+            @Override
+            protected void doStart() throws Exception {
+            }
+
+            @Override
+            protected void doStop() throws Exception {
+            }
             
         };
         

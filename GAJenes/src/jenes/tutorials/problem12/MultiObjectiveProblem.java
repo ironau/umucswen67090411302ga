@@ -201,5 +201,20 @@ public class MultiObjectiveProblem {
             return pf;
         }
 
+        @Override
+        public Fitness<BitwiseChromosome> createInstance() {
+            return null;
+        }
+
+        @Override
+        protected void doStart() throws Exception {
+            
+        }
+
+        @Override
+        protected void doStop() throws Exception {
+            
+        }
+
     }
 }

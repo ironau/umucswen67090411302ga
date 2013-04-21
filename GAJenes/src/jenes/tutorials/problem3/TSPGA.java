@@ -77,6 +77,21 @@ public class TSPGA extends GeneticAlgorithm<IntegerChromosome> {
 
             individual.setScore(count);
         }
+
+        @Override
+        public Fitness<IntegerChromosome> createInstance() {
+            return null;
+        }
+
+        @Override
+        protected void doStart() throws Exception {
+            
+        }
+
+        @Override
+        protected void doStop() throws Exception {
+            
+        }
     }
     
     

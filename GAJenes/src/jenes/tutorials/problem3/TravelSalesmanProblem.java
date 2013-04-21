@@ -145,6 +145,21 @@ public class TravelSalesmanProblem {
                 count += TravelSalesmanProblem.this.map[size-1][0];
                 individual.setScore(count);
             }
+
+            @Override
+            public Fitness<PermutationChromosome> createInstance() {
+                return null;
+            }
+
+            @Override
+            protected void doStart() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            protected void doStop() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
             
         };
         

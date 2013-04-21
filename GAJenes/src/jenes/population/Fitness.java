@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import jenes.chromosome.Chromosome;
+import org.java.plugin.Plugin;
 
 /**
  * This class aims at implementing the scoring and sorting of individuals.
@@ -47,7 +48,7 @@ import jenes.chromosome.Chromosome;
  * @version 2.0
  * @since 2.0
  */
-public abstract class Fitness<C extends Chromosome> implements Cloneable {
+public abstract class Fitness<C extends Chromosome> extends Plugin implements Cloneable {
 
     /** The registry that stores the Sorter instance for a given thread */
     private static ConcurrentHashMap<Thread, Sorter> registry = new ConcurrentHashMap<Thread, Sorter>();
@@ -96,6 +97,12 @@ public abstract class Fitness<C extends Chromosome> implements Cloneable {
         System.arraycopy(bis, 0, biggerIsBetter, 0, bis.length);
     }
 
+    /**
+     * This is a factory method that returns an instance of this fitness function.
+     * @return Fitness<C>
+     */
+    public abstract Fitness<C> createInstance();
+    
     @Override
     public final Fitness<C> clone() {
         try {

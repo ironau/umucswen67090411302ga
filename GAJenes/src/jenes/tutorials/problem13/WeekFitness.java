@@ -143,4 +143,19 @@ public class WeekFitness extends Fitness<ObjectChromosome> {
 
         return studentCount;
     }
+
+    @Override
+    public Fitness<ObjectChromosome> createInstance() {
+        return null;
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        
+    }
+
+    @Override
+    protected void doStop() throws Exception {
+        
+    }
 }

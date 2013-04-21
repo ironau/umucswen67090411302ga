@@ -71,6 +71,19 @@ public class BooleanProblem {
                 
                 individual.setScore(count);
             }
+
+            @Override
+            public Fitness<BooleanChromosome> createInstance() {
+                return this;
+            }
+
+            @Override
+            protected void doStart() throws Exception {
+            }
+
+            @Override
+            protected void doStop() throws Exception {
+            }
             
         };
         

@@ -80,6 +80,20 @@ public class MultiObjectiveProblem {
 
                 individual.setScore(y);
             }
+
+            @Override
+            public Fitness<BitwiseChromosome> createInstance() {
+                return this;
+            }
+
+            @Override
+            protected void doStop() throws Exception {
+            }
+
+            @Override
+            protected void doStart() throws Exception {
+            }
+
         };
 
         NSGA2<BitwiseChromosome> ga = new NSGA2<BitwiseChromosome>(fitness, pop, GENERATION_LIMIT, TRIALS) {

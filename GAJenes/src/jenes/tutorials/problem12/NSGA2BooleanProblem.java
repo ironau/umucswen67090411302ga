@@ -86,5 +86,20 @@ public class NSGA2BooleanProblem {
             
             individual.setScore(new double[]{count0, count1});
         }
+
+        @Override
+        public Fitness<BooleanChromosome> createInstance() {
+            return null;
+        }
+
+        @Override
+        protected void doStart() throws Exception {
+            
+        }
+
+        @Override
+        protected void doStop() throws Exception {
+            
+        }
     }
 }

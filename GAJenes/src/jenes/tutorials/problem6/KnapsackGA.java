@@ -54,6 +54,19 @@ public class KnapsackGA extends GeneticAlgorithm<BooleanChromosome>{
             individual.setScore(utility);
             individual.setLegal(weight <= KnapsackGA.this.capacity);
         }
+
+        @Override
+        public Fitness<BooleanChromosome> createInstance() {
+            return this;
+        }
+
+        @Override
+        protected void doStart() throws Exception {
+        }
+
+        @Override
+        protected void doStop() throws Exception {
+        }
         
     }
     

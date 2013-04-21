@@ -274,4 +274,19 @@ public class ImageMatchingFitness extends Fitness<BitwiseChromosome> {
         }
         return dist;
     }
+
+    @Override
+    public Fitness<BitwiseChromosome> createInstance() {
+        return null;
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        
+    }
+
+    @Override
+    protected void doStop() throws Exception {
+        
+    }
 }

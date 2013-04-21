@@ -78,6 +78,19 @@ public class OCProblem {
             
             individual.setScore(acc);
         }        
+
+        @Override
+        public Fitness<ObjectChromosome> createInstance() {
+            return this;
+        }
+
+        @Override
+        protected void doStart() throws Exception {
+        }
+
+        @Override
+        protected void doStop() throws Exception {
+        }
     };
     
     private static GeneticAlgorithm<ObjectChromosome> ga =

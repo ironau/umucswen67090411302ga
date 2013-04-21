@@ -33,6 +33,13 @@ public class FF4XYLessX4LessY4 extends Fitness<DoubleChromosome> {
         super(bis);
     }
 
+    /**
+     * This is a no argument constructor that defaults to a single objective for maximization
+     */
+    public FF4XYLessX4LessY4() {
+        super(true);
+    }
+
     @Override
     public void evaluate(Individual<DoubleChromosome> individual) {
         DoubleChromosome chromosome = individual.getChromosome();
@@ -47,5 +54,20 @@ public class FF4XYLessX4LessY4 extends Fitness<DoubleChromosome> {
         f = -x4 - y4 + 4 * x * y;
 
         individual.setScore(f);
+    }
+
+    @Override
+    public Fitness<DoubleChromosome> createInstance() {
+        return new FF4XYLessX4LessY4(true);
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        
+    }
+
+    @Override
+    protected void doStop() throws Exception {
+        
     }
 }

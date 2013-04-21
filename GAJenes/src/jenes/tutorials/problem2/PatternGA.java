@@ -79,5 +79,20 @@ public class PatternGA extends GeneticAlgorithm<IntegerChromosome> {
         public void setPrecision(int precision) {
             this.precision = precision;
         }
+
+        @Override
+        public Fitness<IntegerChromosome> createInstance() {
+            return null;
+        }
+
+        @Override
+        protected void doStart() throws Exception {
+            
+        }
+
+        @Override
+        protected void doStop() throws Exception {
+            
+        }
     }
 }
