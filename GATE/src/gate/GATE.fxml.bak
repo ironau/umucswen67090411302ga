@@ -8,6 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane id="AnchorPane" fx:id="GATE" blendMode="DARKEN" cache="true" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gate.GateController">
   <children>
@@ -134,7 +135,11 @@
             <Button id="InitExperitment" fx:id="InitExperiment" mnemonicParsing="false" onAction="#InitializeExperiment" text="Initialize" />
             <Button fx:id="StartExperiment" mnemonicParsing="false" onAction="#StartExperiment" text="Start" />
             <Button fx:id="AbortExperiment" mnemonicParsing="false" onAction="#AbortExperiment" text="Abort" />
-            <Label id="ErrorMsg" fx:id="MessageBar" prefWidth="861.0" />
+            <Label id="ErrorMsg" fx:id="MessageBar" prefWidth="861.0">
+              <font>
+                <Font size="15.0" />
+              </font>
+            </Label>
           </children>
         </HBox>
       </top>

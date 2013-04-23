@@ -13,8 +13,11 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -26,6 +29,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
@@ -35,9 +39,15 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import jenes.AlgorithmEventListener;
+import jenes.GenerationEventListener;
 import jenes.GeneticAlgorithm;
+import jenes.chromosome.Chromosome;
 import jenes.population.Fitness;
+import jenes.population.Individual;
 import jenes.population.Population;
+import jenes.stage.AbstractStage;
+import jenes.statistics.Statistics;
 import jenes.utils.Random;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
@@ -50,7 +60,7 @@ import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.registry.PluginRegistry;
 import org.java.plugin.standard.StandardPluginLocation;
 
-public class GateController implements Initializable {
+public class GateController implements Initializable, GenerationEventListener,AlgorithmEventListener{
 
     private PluginManager pluginManager= ObjectFactory.newInstance().createManager();
     static final Logger log = java.util.logging.Logger.getLogger(GATE.class.getName()) ;
@@ -58,13 +68,17 @@ public class GateController implements Initializable {
     private PluginRegistry plugReg = pluginManager.getRegistry();
     private ObservableList stageList;
     private ArrayList<String> selectedStageList = new ArrayList();
-    private ArrayList<GeneticAlgorithm> experimentQueueList = new ArrayList();
+    private ArrayList<String> experimentQueueList = new ArrayList();
     private XYChart.Series chartDataMax = new XYChart.Series();
     private XYChart.Series chartDataMean = new XYChart.Series();
     private XYChart.Series chartDataMin = new XYChart.Series();
     private ObservableList chromList;
     private ObservableList fitnessFunctionList;
     private Population.Statistics stats;
+    private HashMap fitnessFunctions = new HashMap<String,PluginDescriptor>();
+    private HashMap genericStages = new HashMap<String,PluginDescriptor>();
+    private HashMap chromosomeTypes = new HashMap<String,PluginDescriptor>();
+    private HashMap experiments = new HashMap<String,GeneticAlgorithm>();
     
     long maxPopSize;
     float mutationRate;
@@ -101,6 +115,8 @@ public class GateController implements Initializable {
     ChoiceBox SelectedFitnessFunction;
     @FXML
     Label MessageBar;
+    @FXML
+    Slider JeneSize;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -151,19 +167,19 @@ public class GateController implements Initializable {
      */
     private void configureStages() {
         ArrayList gaStages = new ArrayList();
-        gaStages.addAll(configureExtensionPoint("jenes.stage.AbstractStage"));
-        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crossover"));
-        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Mutator"));
-        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Scaling"));
-        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Selector"));
-        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crowder"));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.AbstractStage",genericStages));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crossover",genericStages));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Mutator",genericStages));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Scaling",genericStages));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Selector",genericStages));
+        gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crowder",genericStages));
         stageList = FXCollections.observableArrayList(gaStages);
         AvailStages.setItems(stageList); 
         log.fine("tied the available stage plugins to the list view");
         log.exiting("configureStages", this.getClass().toString());
 
         ArrayList gaChromosomes = new ArrayList();
-        gaChromosomes.addAll(configureExtensionPoint("jenes.chromosome.Chromosome"));
+        gaChromosomes.addAll(configureExtensionPoint("jenes.chromosome.Chromosome",chromosomeTypes));
         chromList = FXCollections.observableArrayList(gaChromosomes);
         ChromSelect.setItems(chromList); 
         log.fine("tied the available chromosome plugins to the list view");
@@ -172,7 +188,7 @@ public class GateController implements Initializable {
         //fitnessFunctionList
         //gaStages.addAll(configureExtensionPoint("jenes.population.Fitness"));
         ArrayList gaFitnessFunctions = new ArrayList();
-        gaFitnessFunctions.addAll(configureExtensionPoint("jenes.population.Fitness"));
+        gaFitnessFunctions.addAll(configureExtensionPoint("jenes.population.Fitness",fitnessFunctions));
         fitnessFunctionList = FXCollections.observableArrayList(gaFitnessFunctions);
         SelectedFitnessFunction.setItems(fitnessFunctionList); 
         log.fine("tied the available Fitness Function plugins to the list view");
@@ -182,7 +198,7 @@ public class GateController implements Initializable {
     /**
      * 
      */
-    private ArrayList configureExtensionPoint(String etpName) {
+    private ArrayList configureExtensionPoint(String etpName,HashMap<String,PluginDescriptor> map) {
         log.info(this.getClass().getSimpleName()+" configureStages");
         AvailStages.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         PluginDescriptor abstractStageDescriptor = plugReg.getPluginDescriptor(etpName);
@@ -196,6 +212,7 @@ public class GateController implements Initializable {
             PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
             log.log(Level.INFO, "Loading the stage plugin called {0}", ext.getParameter("name").valueAsString());
             stageGatherer.add(ext.getParameter("name").valueAsString());
+            map.put(ext.getParameter("name").valueAsString(),descr);
             // These lines will likely have to move into the GA configuring method triggered by the Initialize Button
             ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
             try {
@@ -220,7 +237,7 @@ public class GateController implements Initializable {
         CurProg.getData().add(chartDataMean);
         CurProg.getData().add(chartDataMin);
         
-        int oldMaxValue=10;
+/*        int oldMaxValue=10;
         int oldMeanValue=4;
         int oldMinValue =2;
         for(int gen=1;gen<500;gen++){
@@ -236,6 +253,7 @@ public class GateController implements Initializable {
             oldMinValue=Math.max(minValue,2);
             
         }
+        */ 
     }
     /**
      * 
@@ -251,7 +269,7 @@ public class GateController implements Initializable {
     private void configureExperimentQueue() {
        log.info(this.getClass().getSimpleName()+"configureExperimentQueue");
        ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
-       
+       ExperimentQueue.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
     /**
      *
@@ -427,18 +445,29 @@ public class GateController implements Initializable {
         }
         
                 /**
-     * This is the even handler for selecting a stage.
+     * This is the event handler for selecting a stage.
      * Currently this doesn't work.
      * @param event 
      */
         public void InitializeExperiment(ActionEvent event) throws PluginLifecycleException, Exception {
             MessageBar.setText("");
             StringBuffer msg = new StringBuffer("This is an error message");
+        //Check to ensure all the needed slections are made
             if(!checkSelecitons(msg)){
                 MessageBar.setText(msg.toString());
                 return;
             }
-            createPopulation();
+            
+        //Create the population to use for the algorithm
+            Population pop = new Population();
+            boolean populationCreated = createPopulation(pop);
+            log.fine("Population size is: "+pop.size());
+            if(!populationCreated && pop.size() <=0) {
+                MessageBar.setText("experiment not initialized: " + MessageBar.getText());
+                return;
+            }
+
+        //Create the fitness function to use for the algorithm
             String selectedFF = (String) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
             if (selectedFF == null) {
                 Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null);
@@ -446,10 +475,28 @@ public class GateController implements Initializable {
             }
             Fitness ff = CreateFitnessFuction(selectedFF);
             log.fine("Fitness Function " + selectedFF + " is loaded");
+
+        //Double check that the fitness funciton exists.
             assert ff != null :"The Fitness function was never found";
-            GeneticAlgorithm ga = new GeneticAlgorithm(ff);
-            addStages(ga);
-            
+
+        //Create the Genetic Algorithm
+            Date date = new Date(System.currentTimeMillis());
+            SimpleDateFormat df = new SimpleDateFormat("ddMMyyy-HH:mm:ss.SSS");
+            String title = selectedFF + "-"+ df.format(date);
+            GeneticAlgorithm ga = new GeneticAlgorithm(ff,pop);
+            ga.setTaskTitle(title);
+        //Add the indicated states in order
+            boolean stagesAdded = addStages(ga);
+        
+        //If the stages didn't add, then return without scheduling
+            if(!stagesAdded) {
+                MessageBar.setText("experiment not initialized: " + MessageBar.getText());
+                return;
+            }
+        // And run the algorithm with the population
+            experimentQueueList.add(ga.getTitle()); 
+            experiments.put(ga.getTitle(), ga);
+            ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
     }
 
                 /**
@@ -458,11 +505,25 @@ public class GateController implements Initializable {
      * @param event 
      */
         public void StartExperiment(ActionEvent event) {
-            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
-            log.fine("Event: a chromosome was selected " + selectedFF);
-            //Start the first experiment in the queue
-            
-            
+            GeneticAlgorithm ga=null;
+            String experimentTitle="";
+        //Check to see if there are experiments
+            if (experimentQueueList.size()==0){
+                MessageBar.setText("There are no experiments to start");
+                return;
+            }
+        //If no selected experiment, then start the first in the list
+            if (ExperimentQueue.getSelectionModel().isEmpty()){
+            //This is a neat trick I clear the not selected item and the set the selected item to the first item 
+                ExperimentQueue.getSelectionModel().clearAndSelect(0);
+            }
+        //Start the selected experiment
+            experimentTitle= (String) ExperimentQueue.getSelectionModel().getSelectedItem();
+            ga = (GeneticAlgorithm) experiments.get(experimentTitle);
+            ga.addGenerationEventListener(this);
+            ga.addAlgorithmEventListener(this);
+            MessageBar.setText("Starting Experiment:" +ga.getTitle());
+            ga.evolve();
         }
     /**
      * This is the even handler for selecting a stage.
@@ -511,8 +572,37 @@ public class GateController implements Initializable {
         return null;
     }
 
-    private void addStages(GeneticAlgorithm ga) {
-        
+    private boolean addStages(GeneticAlgorithm ga) {
+        log.fine("The ordered list of stages is " + selectedStageList.toString());
+    //look up the plugin descriptor in the hashmaps?
+        for (Iterator it = selectedStageList.iterator(); it.hasNext();){
+            String stageName = (String) it.next();
+            log.fine("Creating the stage " + stageName);
+            PluginDescriptor stagePluginDesc = (PluginDescriptor) genericStages.get(stageName);
+            log.fine("Found " + stageName +" Plugin Descriptor " + stagePluginDesc.getPluginClassName());
+        //create an instance of the stage.
+            ClassLoader classLoader = pluginManager.getPluginClassLoader(stagePluginDesc);
+            Class pluginClass = null;
+            try {
+                pluginClass = classLoader.loadClass(stagePluginDesc.getPluginClassName());
+                log.fine("Created an instance of " + pluginClass.getCanonicalName());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        //Add the stage to the GA
+            try {
+                ga.addStage((AbstractStage) pluginClass.newInstance());
+                log.fine("Added Stage to Algorithm");
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+                MessageBar.setText(stageName +" needs a no arg constructor.");
+                return false;
+            }
+
+        }
+    //Then all stages were added without throwing an error, so return true.
+        return true;
     }
 
     private boolean checkSelecitons(StringBuffer msg) {
@@ -528,15 +618,87 @@ public class GateController implements Initializable {
             msg.append(" Fitness Function ");
             allSelected = false;
         }
-        if (selectedStageList.size() >0){
+        if (selectedStageList.size() <1){
             msg.append(" Additional Stages ");
             allSelected = false;
         }
         log.fine(msg.toString());
+        
+        int tempMaxPop=0;
+        try{
+             tempMaxPop = Integer.valueOf(MaxPopTxt.getText());
+        }catch (NumberFormatException nfe){
+            msg.append(" Maximum Population must be an integer");
+        }
+        if(tempMaxPop < 1) {
+            msg.append(" Maximum Population must be 1 or more");
+            allSelected = false;
+        }
         return allSelected;
     }
 
-    private void createPopulation() {
-
+    private boolean createPopulation(Population p) {
+        MessageBar.setText("");
+        int maxPop = Integer.valueOf(MaxPopTxt.getText());
+        Chromosome chrom = null;
+    //        MaxGen;
+        log.fine("The chromosome type is " + ChromSelect.getSelectionModel().getSelectedItem().toString());
+    //look up the plugin descriptor in the hashmaps?
+            String chromosomeName = ChromSelect.getSelectionModel().getSelectedItem().toString();
+            log.fine("Creating the stage " + chromosomeName);
+            PluginDescriptor chromosomePluginDesc = (PluginDescriptor) chromosomeTypes.get(chromosomeName);
+            log.fine("Found " + chromosomeName +" Plugin Descriptor " + chromosomePluginDesc.getPluginClassName());
+        //load the plugin for the chromosome.
+            ClassLoader classLoader = pluginManager.getPluginClassLoader(chromosomePluginDesc);
+            Class chromosomeClass = null;
+            try {
+                chromosomeClass = classLoader.loadClass(chromosomePluginDesc.getPluginClassName());
+                log.fine("Created an instance of " + chromosomeClass.getCanonicalName());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+                MessageBar.setText("Could not load plugin for the " + chromosomeName + " chromosome");
+                return false;
+            }
+        //Create an instance of the chromosome
+            try {
+                chrom = (Chromosome) chromosomeClass.newInstance();
+                log.fine("We have a chromosome of type "+chrom.getClass().getCanonicalName());
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+                MessageBar.setText(chromosomeName +" needs a no arg constructor.");
+                return false;
+            }
+        //now create an individual with the chromosome
+            double sliderValue = JeneSize.getValue();
+            Individual indie = new Individual(chrom,sliderValue);
+        //Now we need to create a population of Maximum Population Szie with the individuals
+            Population newPop = new Population(indie,maxPop);
+            log.fine("the newpopulation size is "+newPop.size());
+            p.add(newPop);
+            log.fine("We have a population of individuals with "+sliderValue+" chromosomes of type "+chrom.getClass().getCanonicalName()+"");
+        return true;
     }
-}
+        public void onGeneration(GeneticAlgorithm ga, long time){
+            log.fine("Statistics were generated for generation: "+ga.getGeneration());
+            Population.Statistics thisGenStats = ga.getCurrentPopulation().getStatistics();
+            chartDataMax.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getLegalHighestScore()));
+            chartDataMean.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getLegalScoreAvg()));
+            chartDataMin.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getLegalLowestScore()));
+            log.fine("graph is updated for generation: "+ga.getGeneration());
+        }
+
+    @Override
+    public void onAlgorithmStart(GeneticAlgorithm ga, long time) {
+        MessageBar.setText(ga.getTitle() + " has started");
+    }
+
+    @Override
+    public void onAlgorithmStop(GeneticAlgorithm ga, long time) {
+        MessageBar.setText(ga.getTitle() + " has stoppedd");
+    }
+
+    @Override
+    public void onAlgorithmInit(GeneticAlgorithm ga, long time) {
+        MessageBar.setText(ga.getTitle() + " is initialized");;
+    }
+    }
