@@ -29,6 +29,34 @@ public class Statistics extends LoggableStatistics {
     private long[] fitnessEvalStageEnd;
     private long timeSpentInFitnessEval;
     private long randomSeed;
+    private double maxValue;
+    private double minValue;
+    private double averageValue;
+    
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue(double maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    public double getMinValue() {
+        return minValue;
+    }
+
+    public void setMinValue(double minValue) {
+        this.minValue = minValue;
+    }
+
+    public double getAverageValue() {
+        return averageValue;
+    }
+
+    public void setAverageValue(double averageValue) {
+        this.averageValue = averageValue;
+    }
+
 
     /**
      * Constructs a new GeneticAlgorithm.Statistics.

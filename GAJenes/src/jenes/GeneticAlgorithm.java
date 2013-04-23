@@ -21,6 +21,7 @@ package jenes;
 import jenes.population.Fitness;
 import jenes.utils.Random;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
@@ -768,6 +769,23 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     protected void onGeneration(long time) {
         // do nothing; override it for a specific behavior
+        List<Individual<T>> theIndividuals = currentPopulation.getIndividuals();
+        log.fine("the total individuals in the current population is "+theIndividuals.size());
+        Iterator it = theIndividuals.iterator();
+        double max=Integer.MIN_VALUE;
+        double min=Integer.MAX_VALUE;
+        double total=0;
+        while(it.hasNext()){
+            Individual thisIndividual = (Individual) it.next();
+            total+=thisIndividual.getScore();
+            if(thisIndividual.getScore() > max ){ max = thisIndividual.getScore();}
+            if(thisIndividual.getScore()< min ){ min = thisIndividual.getScore();}
+        }//end while
+        statistics.setMaxValue(max);
+        statistics.setMinValue(min);
+        statistics.setAverageValue(total/theIndividuals.size());
+        log.fine("Set the generation statistics [" + max+","+min+","+total/theIndividuals.size()+"]");
+        
     }
 
     /**
@@ -784,7 +802,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
     /**
      * Evaluates the population. The method iterates the evaluation on each
-     * individual. Evalution is performed according to flag
+     * individual. Evaluation is performed according to flag
      * <p>
      *
      * @param population
