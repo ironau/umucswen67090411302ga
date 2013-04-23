@@ -63,6 +63,7 @@ import org.java.plugin.standard.StandardPluginLocation;
 public class GateController implements Initializable, GenerationEventListener,AlgorithmEventListener{
 
     private PluginManager pluginManager= ObjectFactory.newInstance().createManager();
+    private SimpleDateFormat runningLogDateFormat = new SimpleDateFormat("ddMMyyy-HH:mm:ss.SSS");
     static final Logger log = java.util.logging.Logger.getLogger(GATE.class.getName()) ;
     private Map<String, Identity> publishedPlugins;
     private PluginRegistry plugReg = pluginManager.getRegistry();
@@ -505,6 +506,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
      * @param event 
      */
         public void StartExperiment(ActionEvent event) {
+            RunningLog.setText("");
             GeneticAlgorithm ga=null;
             String experimentTitle="";
         //Check to see if there are experiments
@@ -680,11 +682,13 @@ public class GateController implements Initializable, GenerationEventListener,Al
     }
         public void onGeneration(GeneticAlgorithm ga, long time){
             log.fine("Statistics were generated for generation: "+ga.getGeneration());
-            Population.Statistics thisGenStats = ga.getCurrentPopulation().getStatistics();
-            chartDataMax.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getLegalHighestScore()));
-            chartDataMean.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getLegalScoreAvg()));
-            chartDataMin.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getLegalLowestScore()));
+            Statistics thisGenStats = ga.getStatistics();
+            chartDataMax.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getMaxValue()));
+            chartDataMean.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getAverageValue()));
+            chartDataMin.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getMinValue()));
             log.fine("graph is updated for generation: "+ga.getGeneration());
+//            RunningLog.setPrefRowCount(RunningLog.getPrefRowCount()+1);
+            RunningLog.appendText(ga.getTitle()+": Started at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageBegin())+": Ended at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageEnd())+": has been running for "+ga.statistics.getExecutionTime()+"\n");
         }
 
     @Override
@@ -694,7 +698,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
 
     @Override
     public void onAlgorithmStop(GeneticAlgorithm ga, long time) {
-        MessageBar.setText(ga.getTitle() + " has stoppedd");
+        MessageBar.setText(ga.getTitle() + " has stopped");
     }
 
     @Override
