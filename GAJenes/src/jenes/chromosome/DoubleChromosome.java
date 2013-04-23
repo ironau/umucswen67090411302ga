@@ -33,9 +33,10 @@ import jenes.utils.Random;
  */
 public final class DoubleChromosome implements Chromosome<DoubleChromosome> {
 
-    protected double[] genes;
-    protected double upperBound, lowerBound;
-    protected double defaultValue = 0;
+    private double[] genes;
+    private double upperBound = 0.5 * Double.MAX_VALUE;
+    private double lowerBound = 0.5 * Double.MIN_VALUE;
+    private double defaultValue = 0;
 
     /**
      * Creates a new DoubleChromosome as a copy of the specified chromosome
@@ -68,6 +69,19 @@ public final class DoubleChromosome implements Chromosome<DoubleChromosome> {
         this.genes = new double[length];
         this.upperBound = upperBound;
         this.lowerBound = this.defaultValue = lowerBound;
+    }
+    /**
+     * Creates a DoubleChromosome with each allele in the range
+     * [lowerBound, upperBound[
+     * <p>
+     * the chromosome length is defaulted to 3
+     * the lowerBound is defaulted to 1/2 Double.Min_VALIE
+     * the upperBound is defaulted to 1/2 Double.MAX_VLUE
+     */
+    public DoubleChromosome() {
+        this.genes = new double[3];
+        this.upperBound = 0.5 * Double.MAX_VALUE;
+        this.lowerBound = this.defaultValue = 0.5 * Double.MIN_VALUE;
     }
 
     public final void setDefaultValueAt(final int pos) {
@@ -406,4 +420,28 @@ public final class DoubleChromosome implements Chromosome<DoubleChromosome> {
         }
         return toReturn;
     }
+    
+    /**  Sets the lower bound to a new value.
+     *
+     * @param newLB
+     */
+    public void setLowerBound(double newLB){
+        this.lowerBound = newLB;
+    }
+    /**  Sets the lower bound to a new value.
+     *
+     * @param newLB
+     */
+    public void setUpperBound(double newUB){
+        this.upperBound = newUB;
+    }
+    /**  Sets the length of the chromosome and regenerates the array.
+     *
+     * @param newLB
+     */
+    public void setLength(int newLen){
+        this.genes = new double[newLen];
+    }
+    
+    
 }

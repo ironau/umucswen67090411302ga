@@ -40,6 +40,15 @@ public class OnePointCrossover<T extends Chromosome> extends Crossover<T>{
     /**
      * Constructs a new one-point crossover with the specified probability
      *
+     * defaults the probability of crossover to 20%
+     */
+    public OnePointCrossover() {
+        this(0.2);
+    }
+    
+    /**
+     * Constructs a new one-point crossover with the specified probability
+     *
      * @param probability the crossover probability
      */
     public OnePointCrossover(double probability) {

@@ -256,11 +256,11 @@ public class Statistics extends LoggableStatistics {
     }
 
     public void setStopTime(long now) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        stopTime= now;
     }
 
     public void setExecutionTime(long l) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        executionTime=l;
     }
 
     /**
@@ -341,5 +341,4 @@ public class Statistics extends LoggableStatistics {
     private long getGenerationEndTimes(int gen) {
         return generationEndTimes[gen];
     }
-
 }

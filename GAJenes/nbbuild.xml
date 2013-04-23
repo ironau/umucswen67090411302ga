@@ -178,8 +178,6 @@
 
         <package-plugin pluginclass="jenes.stage.Sequence" pluginLocation="${dist.jar.dir}" libraryID="Sequence" 
             pluginID="jenes.stage.Sequence" extensionClass="jenes.stage.AbstractStage" toolTip="a Generic Sequence stage"/>
-        <package-plugin pluginclass="jenes.stage.Parallel" pluginLocation="${dist.jar.dir}" libraryID="Parallel" 
-            pluginID="jenes.stage.Parallel" extensionClass="jenes.stage.AbstractStage"/>
         <package-plugin pluginclass="jenes.stage.Evaluator" pluginLocation="${dist.jar.dir}" libraryID="Evaluator" 
             pluginID="jenes.stage.Evaluator" extensionClass="jenes.stage.AbstractStage"/>
         <package-plugin pluginclass="jenes.stage.BreakPoint" pluginLocation="${dist.jar.dir}" libraryID="BreakPoint" 
@@ -218,8 +216,6 @@
             pluginID="jenes.stage.operator.common.ProportionalScaling" extensionClass="jenes.stage.operator.Scaling"/>
         <package-plugin pluginclass="jenes.stage.operator.common.TopScaling" pluginLocation="${dist.jar.dir}" libraryID="TopScaling" 
             pluginID="jenes.stage.operator.common.TopScaling" extensionClass="jenes.stage.operator.Scaling"/>
-        <package-plugin pluginclass="jenes.stage.operator.common.SteadyState" pluginLocation="${dist.jar.dir}" libraryID="SteadyState" 
-            pluginID="jenes.stage.operator.common.SteadyState" extensionClass="jenes.stage.operator.Crowder"/>
         <package-plugin pluginclass="jenes.stage.operator.common.TwoPointsCrossover" pluginLocation="${dist.jar.dir}" libraryID="TwoPointsCrossover" 
             pluginID="jenes.stage.operator.common.TwoPointsCrossover" extensionClass="jenes.stage.operator.Crossover"/>
         <package-plugin pluginclass="jenes.tutorials.problem10.FF4XYLessX4LessY4" pluginLocation="${dist.jar.dir}" libraryID="FF4XYLessX4LessY4" 

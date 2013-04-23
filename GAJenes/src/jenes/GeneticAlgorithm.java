@@ -22,6 +22,7 @@ import jenes.population.Fitness;
 import jenes.utils.Random;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javafx.concurrent.Task;
 
 import jenes.chromosome.Chromosome;
@@ -184,6 +185,7 @@ import jenes.utils.multitasking.Runner;
  */
 public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
+    static final Logger log = java.util.logging.Logger.getLogger(GeneticAlgorithm.class.getName()) ;
     /** The default maximum number of generations */
     public static final int DEFAULT_GENERATION_LIMIT = 100;
     /** The default history size */
@@ -214,6 +216,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
     @Override
     protected Object call() throws Exception {
+        log.fine("Genetic Algorithm Started: "+ this.getTitle());
         evolve(true);
         return statistics;
     }
@@ -253,10 +256,10 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
     /** The generation listeners */
     protected List<GenerationEventListener<T>> generationListeners;
 
-    /** The resize stategy enumeration. It is used in @link jenes.stage.Sequence */
+    /** The resize strategy enumeration. It is used in @link jenes.stage.Sequence */
     public static enum ResizeStrategy {
 
-        /** No resize is perfomed. */
+        /** No resize is performed. */
         NONE,
         /** If there is a need to expand, additional individuals are added, else they are removed. */
         AUTO,
@@ -277,6 +280,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     public GeneticAlgorithm() {
         this(null, null, DEFAULT_GENERATION_LIMIT);
+        log.fine("Genetic Algorithm created with default constructor");
     }
 
     /**
@@ -289,6 +293,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     public GeneticAlgorithm(final Population<T> pop) {
         this(null, pop, DEFAULT_GENERATION_LIMIT);
+        log.fine("Genetic Algorithm created with population constructor");
     }
 
     /**
@@ -303,6 +308,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     public GeneticAlgorithm(final Population<T> pop, final int genlimit) {
         this(null, pop, genlimit);
+        log.fine("Genetic Algorithm created with population, genlimit constructor");
     }
 
     /**
@@ -312,6 +318,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     public GeneticAlgorithm(final Fitness fitness) {
         this(fitness, null, DEFAULT_GENERATION_LIMIT);
+        log.fine("Genetic Algorithm created with fitness function constructor");
     }
 
     /**
@@ -324,6 +331,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     public GeneticAlgorithm(final Fitness fitness, final Population<T> pop) {
         this(fitness, pop, DEFAULT_GENERATION_LIMIT);
+        log.fine("Genetic Algorithm created with fitness function,population constructor");
     }
 
     /**
@@ -337,7 +345,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      *            the generations upper bound
      */
     public GeneticAlgorithm(final Fitness fitness, final Population<T> pop, final int genlimit) {
-
+        log.fine("Genetic Algorithm created with fitness,population,genlimit constructor");
         this.initialPopulation = pop;
         if (pop != null) {
             pool = pop.getPool();
@@ -382,6 +390,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      * @param fitness   new fitness
      */
     public final void setFitness(Fitness fitness) {
+        log.fine("Genetic Algorithm fitness funciton set");
         this.body.setFitness(fitness);
     }
 
@@ -413,7 +422,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
     /**
      * Impose {@link Random} seed in order to reproduce an execution producing 
-     * the same enviroinment
+     * the same environment
      * 
      * @param seed the seed to set
      */
@@ -555,12 +564,15 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
     public final void evolve(boolean restart) throws AlgorithmException {
 
         this.body.init(this);
-
+        log.fine("Genetic Algorithm has initialized");
         this.start(restart);
 
         final int limit = this.generationLimit;
         for (generation = 0; generation < limit && !end(); generation++) {
-
+            //Stop execution if the algorithm is canceled.
+            if (this.isCancelled()) break;
+            
+            log.fine("Genetic Algorithm evloving generation"+generation);
             statistics.setGenerations(generation+1);
             try {
                 currentPopulation = history[0];
@@ -574,15 +586,16 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
                 // population.
                 // (see Sequence.process)
                 this.body.process(nextPopulation, nextPopulation);
-
+                log.fine("Genetic Algorithm processed generation: "+generation);
                 this.evaluatePopulation(nextPopulation, fullEvaluationForced);
-
+                log.fine("Genetic Algorithm evaluated generation: "+generation);
                 for (int i = this.historySize - 1; i > 0; i--) {
                     history[i] = history[i - 1];
                 }
                 history[0] = nextPopulation;
             } catch (StageException e) {
                 statistics.setExceptionTerminated(true);
+                log.fine("Genetic Algorithm had error evoling generation: "+generation);
                 throw new AlgorithmException(
                         "An error occured during the ga evolution", e);
             }
@@ -600,7 +613,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
             if (p != null) {
                 p.resize();
             }
-        }
+        }//End of generation loop
         this.stop();
     }
 
@@ -816,7 +829,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
         now = System.currentTimeMillis();
         statistics.setFitnessEvalStageEnd(this.generation,now);
-        statistics.addTimeSpentInFitnessEval(now - statistics.getFitnessEvalStageBegin(this.generation));
+        statistics.addTimeSpentInFitnessEval(now - statistics.getFitnessEvalStageBegin());
 
     }
 
@@ -1214,5 +1227,9 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
     @Override
     public final String toString() {
         return (getClass().getName());
+    }
+    
+    public void setTaskTitle(final String newTitle){
+        super.updateTitle(newTitle);
     }
 }

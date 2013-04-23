@@ -35,6 +35,15 @@ public class IntermediateCrossover<T extends DoubleChromosome> extends Crossover
     /**
      * Creates IntermediateCrossover
      * 
+     * Defaults the probability to 20%
+     */
+    public IntermediateCrossover() {
+        this(0.2);
+    }
+
+    /**
+     * Creates IntermediateCrossover
+     * 
      * @param p crossover probability 
      */
     public IntermediateCrossover(double p) {

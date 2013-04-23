@@ -40,6 +40,15 @@ public class TwoPointsCrossover<T extends Chromosome> extends Crossover<T>{
     /**
      * Constructs a new two-points crossover with the specified probability
      *
+     * defaults the probability of crossover to 20%
+     */
+    public TwoPointsCrossover() {
+        this(0.2);
+    }
+
+    /**
+     * Constructs a new two-points crossover with the specified probability
+     *
      * @param probability the crossover probability
      */
     public TwoPointsCrossover(double probability) {

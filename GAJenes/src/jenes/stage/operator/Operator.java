@@ -51,7 +51,7 @@ public abstract class Operator<T extends Chromosome> extends AbstractStage<T> {
      * Constructs a new operator
      *
      */
-    protected Operator(){
+    public Operator(){
         this.random = Random.getInstance();
     }
     

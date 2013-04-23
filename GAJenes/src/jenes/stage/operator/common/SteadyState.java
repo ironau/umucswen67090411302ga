@@ -44,7 +44,7 @@ public class SteadyState<T extends Chromosome> extends Crowder<T> {
     /** Default replace strategy */
     public static final ReplacementStrategy DEFAULT_REPLACEMENT_STRATEGY = ReplacementStrategy.WORST;
     
-    /** Defualt selection rate */
+    /** Default selection rate */
     public static final int DEFAULT_SELECTION_RATE = 2;
     
     /** Default replacement rate */
@@ -75,7 +75,7 @@ public class SteadyState<T extends Chromosome> extends Crowder<T> {
      * @param rr        replacement rate
      * @param sr        selection rate
      * @param selector  selector
-     * @param stages    body statges
+     * @param stages    body stages
      */
     public SteadyState(final int rr, final int sr, final Selector<T> selector, final AbstractStage<T>... stages) {
 

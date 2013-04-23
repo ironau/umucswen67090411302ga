@@ -74,6 +74,21 @@ public class DeJongCrowder<T extends Chromosome> extends Crowder<T> {
     /**
      * Creates DeJongCrowder
      * 
+     * This instance should have it's Selector Factor and Crowding Factor 
+     * set via the accessors prior to use.
+     */
+    public DeJongCrowder() {
+        this( 2,
+                2,
+                DEFAULT_SELECTION_METHOD,
+                DEFAULT_CROSSOVER_METHOD,
+                DEFAULT_CROSSOVER_PROBABILITY,
+                DEFAULT_MUTATION_PROBABILITY);
+    }
+
+    /**
+     * Creates DeJongCrowder
+     * 
      * @param sr    selection rate
      * @param cf    crowding rate
      */

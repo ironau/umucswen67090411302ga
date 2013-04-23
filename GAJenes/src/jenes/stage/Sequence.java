@@ -20,6 +20,7 @@ package jenes.stage;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import jenes.population.Fitness;
 import jenes.GeneticAlgorithm;
@@ -40,6 +41,7 @@ import jenes.population.Population;
  */
 public class Sequence<T extends Chromosome> extends AbstractStage<T> {
 
+    static final Logger log = java.util.logging.Logger.getLogger(GeneticAlgorithm.class.getName()) ;
     private List<AbstractStage<T>> stages;
     private Population<T> internal = null;
 
@@ -167,7 +169,7 @@ public class Sequence<T extends Chromosome> extends AbstractStage<T> {
                         break;
                 }
                 stages.get(0).process(in, internal);
-
+                log.fine("Genetic Algorithm finished resizing generation: "+ga.getGeneration());
                 Population<T> p1 = internal;
                 Population<T> p2 = out;
                 for (int i = 1; i < ns; i++) {
@@ -180,6 +182,7 @@ public class Sequence<T extends Chromosome> extends AbstractStage<T> {
                             break;
                     }
                     stages.get(i).process(p1, p2);
+                    log.fine("Genetic Algorithm finished processing stage: "+stages.get(i).getClass().getName());
                     p1.swap(p2);
                 }
                 p1.swap(out);
