@@ -27,7 +27,7 @@ public class GATE extends Application {
             Scene scene = new Scene(page);
             
             stage.setScene(scene);
-            stage.setTitle("Gentic Algorithm Testing Envirionment");
+            stage.setTitle("Gentic Algorithm Tool for Experimentation");
             stage.show();
         } catch (Exception ex) {
             log.log(Level.SEVERE,GATE.class.getName(), ex);
