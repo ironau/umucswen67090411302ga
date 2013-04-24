@@ -49,6 +49,7 @@ import jenes.population.Population;
 import jenes.stage.AbstractStage;
 import jenes.statistics.Statistics;
 import jenes.utils.Random;
+import jenes.utils.XLSLogger;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginLifecycleException;
@@ -80,6 +81,10 @@ public class GateController implements Initializable, GenerationEventListener,Al
     private HashMap genericStages = new HashMap<String,PluginDescriptor>();
     private HashMap chromosomeTypes = new HashMap<String,PluginDescriptor>();
     private HashMap experiments = new HashMap<String,GeneticAlgorithm>();
+    private XLSLogger resultsLogger;
+    String resultsLoggerSchema[] = {"startTime","stopTime","initTime","executionTime","generations","generationLimit",
+            "exceptionTerminated","fitnessEvaluationNumbers","timeSpentInFitnessEval",
+            "randomSeed","maxValue","minValue","averageValue"};
     
     long maxPopSize;
     float mutationRate;
@@ -230,13 +235,8 @@ public class GateController implements Initializable, GenerationEventListener,Al
      */
     private void configureGraph() {
         log.info(this.getClass().getSimpleName()+"configureGraph");
-        chartDataMax.setName("Maximum Population Value");
-        chartDataMean.setName("Mean Population Value");
-        chartDataMin.setName("Min Population Value");
-        
-        CurProg.getData().add(chartDataMax);
-        CurProg.getData().add(chartDataMean);
-        CurProg.getData().add(chartDataMin);
+        setupChart();
+        CurProg.setAnimated(true);
         
 /*        int oldMaxValue=10;
         int oldMeanValue=4;
@@ -467,7 +467,15 @@ public class GateController implements Initializable, GenerationEventListener,Al
                 MessageBar.setText("experiment not initialized: " + MessageBar.getText());
                 return;
             }
-
+            
+        //Get the generation limit for this algorithm
+            int maxGenerations = 100;
+            String rawMaxGen = MaxGen.getText();
+            try{
+            maxGenerations = Integer.valueOf(rawMaxGen);
+            }catch(NumberFormatException nfe){
+                MessageBar.setText("experiment not initialized: " + MessageBar.getText()+" MaxGenerations must be an integer");
+            }
         //Create the fitness function to use for the algorithm
             String selectedFF = (String) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
             if (selectedFF == null) {
@@ -484,7 +492,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
             Date date = new Date(System.currentTimeMillis());
             SimpleDateFormat df = new SimpleDateFormat("ddMMyyy-HH:mm:ss.SSS");
             String title = selectedFF + "-"+ df.format(date);
-            GeneticAlgorithm ga = new GeneticAlgorithm(ff,pop);
+            GeneticAlgorithm ga = new GeneticAlgorithm(ff,pop,maxGenerations);
             ga.setTaskTitle(title);
         //Add the indicated states in order
             boolean stagesAdded = addStages(ga);
@@ -506,7 +514,13 @@ public class GateController implements Initializable, GenerationEventListener,Al
      * @param event 
      */
         public void StartExperiment(ActionEvent event) {
+        //clear output before starting
             RunningLog.setText("");
+            CurProg.getData().clear();
+            chartDataMax.getData().clear();
+            chartDataMean.getData().clear();
+            chartDataMin.getData().clear();
+            
             GeneticAlgorithm ga=null;
             String experimentTitle="";
         //Check to see if there are experiments
@@ -519,12 +533,25 @@ public class GateController implements Initializable, GenerationEventListener,Al
             //This is a neat trick I clear the not selected item and the set the selected item to the first item 
                 ExperimentQueue.getSelectionModel().clearAndSelect(0);
             }
+
         //Start the selected experiment
             experimentTitle= (String) ExperimentQueue.getSelectionModel().getSelectedItem();
+            log.fine("Event: a chromosome was selected " + experimentTitle);
             ga = (GeneticAlgorithm) experiments.get(experimentTitle);
+            assert ga != null : "The genetic Algorithm was mull cannot start.";
             ga.addGenerationEventListener(this);
             ga.addAlgorithmEventListener(this);
             MessageBar.setText("Starting Experiment:" +ga.getTitle());
+
+        /*Create an XLS Logfile
+            try {
+                resultsLogger = new XLSLogger(resultsLoggerSchema,ga.getTitle());
+            } catch (IOException ex) {
+                Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+            }*/
+            
+        //Now Start The Experiment
+//            new Thread(ga);
             ga.evolve();
         }
     /**
@@ -682,13 +709,47 @@ public class GateController implements Initializable, GenerationEventListener,Al
     }
         public void onGeneration(GeneticAlgorithm ga, long time){
             log.fine("Statistics were generated for generation: "+ga.getGeneration());
-            Statistics thisGenStats = ga.getStatistics();
-            chartDataMax.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getMaxValue()));
-            chartDataMean.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getAverageValue()));
-            chartDataMin.getData().add(new XYChart.Data(ga.getGeneration(),thisGenStats.getMinValue()));
+            AllPopulationFilter popfilter = new AllPopulationFilter();
+            
+            Population.Statistics.Group thisGenStats = ga.getHistoryAt(ga.getGeneration()-1).getStatistics().addGroup(popfilter,true);
+            if(thisGenStats == null){
+                log.fine("The population statistics group was null");
+                return;
+            }
+            double[] max4gen = thisGenStats.getMax();
+            double[] mean4gen =thisGenStats.getMean();
+            double[] min4gen =thisGenStats.getMin();
+            log.fine("The max value array is :"+max4gen);
+            
+            chartDataMax.getData().add(new XYChart.Data(ga.getGeneration(),max4gen));
+            chartDataMean.getData().add(new XYChart.Data(ga.getGeneration(),mean4gen));
+            chartDataMin.getData().add(new XYChart.Data(ga.getGeneration(),min4gen));
+            CurProg.layout();
             log.fine("graph is updated for generation: "+ga.getGeneration());
 //            RunningLog.setPrefRowCount(RunningLog.getPrefRowCount()+1);
             RunningLog.appendText(ga.getTitle()+": Started at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageBegin())+": Ended at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageEnd())+": has been running for "+ga.statistics.getExecutionTime()+"\n");
+        /* logging schema is "startTime","stopTime","initTime","executionTime",
+         * "generations","generationLimit","exceptionTerminated","fitnessEvaluationNumbers",
+         * "timeSpentInFitnessEval","randomSeed","maxValue","minValue","averageValue"
+         */
+
+//Currently this blows up because the new logger file has gone out of scope from when it was created.  grr.
+            
+/*            resultsLogger.setLine(ga.getGeneration());
+            resultsLogger.put("startTime",thisGenStats.getStartTime());
+            resultsLogger.put("stopTime",thisGenStats.getStopTime());
+            resultsLogger.put("initTime",thisGenStats.getInitTime());
+            resultsLogger.put("executionTime",thisGenStats.getExecutionTime());
+            resultsLogger.put("generations",thisGenStats.getGenerations());
+            resultsLogger.put("generationLimit",thisGenStats.getGenerationLimit());
+            resultsLogger.put("exceptionTerminated",thisGenStats.isExceptionTerminated());
+            resultsLogger.put("fitnessEvaluationNumbers",thisGenStats.getFitnessEvaluationNumbers());
+            resultsLogger.put("timeSpentInFitnessEval",thisGenStats.getTimeSpentInFitnessEval());
+            resultsLogger.put("randomSeed",thisGenStats.getRandomSeed());
+            resultsLogger.put("maxValue",thisGenStats.getMaxValue());
+            resultsLogger.put("minValue",thisGenStats.getMinValue());
+            resultsLogger.put("averageValue",thisGenStats.getAverageValue());
+*/
         }
 
     @Override
@@ -699,10 +760,36 @@ public class GateController implements Initializable, GenerationEventListener,Al
     @Override
     public void onAlgorithmStop(GeneticAlgorithm ga, long time) {
         MessageBar.setText(ga.getTitle() + " has stopped");
+        //Remove the experiment from the queue
+        
+        //Check for AutoStart  If yes start the next experiment
+        //if not autoStaart then do not start the next experiment. 
+        experimentQueueList.remove(ga.getTitle()); 
+        experiments.remove(ga.getTitle());
+        ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
     }
 
     @Override
     public void onAlgorithmInit(GeneticAlgorithm ga, long time) {
         MessageBar.setText(ga.getTitle() + " is initialized");;
+    }
+
+    private void setupChart() {
+        chartDataMax.setName("Maximum Population Value");
+        chartDataMean.setName("Mean Population Value");
+        chartDataMin.setName("Min Population Value");
+        
+        CurProg.getData().add(chartDataMax);
+        CurProg.getData().add(chartDataMean);
+        CurProg.getData().add(chartDataMin);
+    }
+
+    private static class AllPopulationFilter implements Population.Filter{
+
+        public AllPopulationFilter() {
+        }
+        public boolean pass(Individual<?> individual){
+            return true;
+        }
     }
     }
