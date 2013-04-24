@@ -769,8 +769,11 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     protected void onGeneration(long time) {
         // do nothing; override it for a specific behavior
-        List<Individual<T>> theIndividuals = currentPopulation.getIndividuals();
-        log.fine("the total individuals in the current population is "+theIndividuals.size());
+        log.fine("the total individuals in the current population is "+this.getHistoryAt(this.getGeneration()-1).size());
+        Population<T> prevPop = this.getHistoryAt(this.getGeneration()-1);
+        this.getHistoryAt(this.getGeneration()-1).getStatistics().update(prevPop);
+        /*        List<Individual<T>> theIndividuals = currentPopulation.getIndividuals();
+        
         Iterator it = theIndividuals.iterator();
         double max=Integer.MIN_VALUE;
         double min=Integer.MAX_VALUE;
@@ -784,7 +787,8 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
         statistics.setMaxValue(max);
         statistics.setMinValue(min);
         statistics.setAverageValue(total/theIndividuals.size());
-        log.fine("Set the generation statistics [" + max+","+min+","+total/theIndividuals.size()+"]");
+        log.fine("Set the generation statistics [" + max+","+min+","+total/theIndividuals.size()+"]");*/
+        log.fine("Set the generation statistics [" + prevPop.getStatistics().getLegalHighestScore()+","+prevPop.getStatistics().getLegalLowestScore()+","+prevPop.getStatistics().getLegalScoreAvg()+"]");
         
     }
 
