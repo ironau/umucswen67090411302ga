@@ -17,12 +17,12 @@
         <TextArea fx:id="RunningLog" editable="false" prefWidth="200.0" text="Running Statistics will be displayed here" />
       </bottom>
       <center>
-        <LineChart fx:id="CurProg" minHeight="-Infinity" minWidth="-Infinity" title="" BorderPane.alignment="TOP_LEFT">
+        <LineChart fx:id="CurProg" cache="true" cacheHint="SPEED" depthTest="ENABLE" horizontalZeroLineVisible="false" minHeight="-Infinity" minWidth="-Infinity" title="" verticalZeroLineVisible="false" BorderPane.alignment="TOP_LEFT">
           <xAxis>
-            <NumberAxis side="BOTTOM" />
+            <NumberAxis label="Generation" side="BOTTOM" upperBound="50.0" />
           </xAxis>
           <yAxis>
-            <NumberAxis side="LEFT" />
+            <NumberAxis forceZeroInRange="false" label="Score" lowerBound="-1.0" side="LEFT" upperBound="1.0" />
           </yAxis>
           <BorderPane.margin>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />

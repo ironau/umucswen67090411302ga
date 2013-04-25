@@ -31,6 +31,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ValueAxis;
+import javafx.scene.chart.ValueAxisBuilder;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
@@ -208,9 +211,9 @@ public class GateController implements Initializable, GenerationEventListener,Al
         log.info(this.getClass().getSimpleName()+" configureStages");
         AvailStages.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         PluginDescriptor abstractStageDescriptor = plugReg.getPluginDescriptor(etpName);
-        log.fine("found the abstractStage descriptor");
+        log.fine("found the abstractStage descriptor for "+etpName);
         ExtensionPoint extPointAbstractStages = plugReg.getExtensionPoint(abstractStageDescriptor.getId(), etpName);
-        log.fine("loaded the abstractStage extension point");
+        log.fine("loaded the extension point");
         ArrayList<String> stageGatherer = new ArrayList();
         for (Iterator it = extPointAbstractStages.getConnectedExtensions().iterator(); it.hasNext();){
             log.fine("Loading a stage plugin ");
@@ -236,8 +239,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
     private void configureGraph() {
         log.info(this.getClass().getSimpleName()+"configureGraph");
         setupChart();
-        CurProg.setAnimated(true);
-        
+      
 /*        int oldMaxValue=10;
         int oldMeanValue=4;
         int oldMinValue =2;
@@ -487,7 +489,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
 
         //Double check that the fitness funciton exists.
             assert ff != null :"The Fitness function was never found";
-
+            ff.setBiggerIsBetter((int) Math.floor(JeneSize.getValue()), true);
         //Create the Genetic Algorithm
             Date date = new Date(System.currentTimeMillis());
             SimpleDateFormat df = new SimpleDateFormat("ddMMyyy-HH:mm:ss.SSS");
@@ -520,6 +522,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
             chartDataMax.getData().clear();
             chartDataMean.getData().clear();
             chartDataMin.getData().clear();
+            setupChart();
             
             GeneticAlgorithm ga=null;
             String experimentTitle="";
@@ -710,24 +713,33 @@ public class GateController implements Initializable, GenerationEventListener,Al
         public void onGeneration(GeneticAlgorithm ga, long time){
             log.fine("Statistics were generated for generation: "+ga.getGeneration());
             AllPopulationFilter popfilter = new AllPopulationFilter();
-            
-            Population.Statistics.Group thisGenStats = ga.getHistoryAt(ga.getGeneration()-1).getStatistics().addGroup(popfilter,true);
+
+//            Population.Statistics thisGenStats = ga.getHistoryAt(ga.getGeneration()).getStatistics();
+            Population.Statistics thisGenStats = ga.getHistoryAt(ga.getGeneration()-1).getStatistics();
+//            Population.Statistics.Group thisGenStats = ga.getHistoryAt(ga.getGeneration()).getStatistics().addGroup(popfilter,true);
             if(thisGenStats == null){
                 log.fine("The population statistics group was null");
                 return;
             }
-            double[] max4gen = thisGenStats.getMax();
-            double[] mean4gen =thisGenStats.getMean();
-            double[] min4gen =thisGenStats.getMin();
-            log.fine("The max value array is :"+max4gen);
+            double max4gen = thisGenStats.getLegalHighestScore();
+            double mean4gen =thisGenStats.getLegalScoreAvg();
+            double min4gen =thisGenStats.getLegalLowestScore();
+//            double max4gen = thisGenStats.getMax()[ga.getGeneration()];
+//            double mean4gen =thisGenStats.getMean()[ga.getGeneration()];
+//            double min4gen =thisGenStats.getMin()[ga.getGeneration()];
+            log.fine("The max value is :"+max4gen);
             
             chartDataMax.getData().add(new XYChart.Data(ga.getGeneration(),max4gen));
             chartDataMean.getData().add(new XYChart.Data(ga.getGeneration(),mean4gen));
             chartDataMin.getData().add(new XYChart.Data(ga.getGeneration(),min4gen));
-            CurProg.layout();
-            log.fine("graph is updated for generation: "+ga.getGeneration());
+
+            
+            //Addjust the range on the chart
+//            CurProg.getYAxis().invalidateRange();
+            
+            log.fine("graph is updated for generation: "+ga.getGeneration()+"with max="+max4gen+" min="+min4gen+" avg="+mean4gen);
 //            RunningLog.setPrefRowCount(RunningLog.getPrefRowCount()+1);
-            RunningLog.appendText(ga.getTitle()+": Started at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageBegin())+": Ended at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageEnd())+": has been running for "+ga.statistics.getExecutionTime()+"\n");
+            RunningLog.appendText(ga.getTitle()+": Started at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageBegin())+": generation: "+ga.getGeneration()+" [max="+max4gen+", min="+min4gen+", avg="+mean4gen+"]\n");
         /* logging schema is "startTime","stopTime","initTime","executionTime",
          * "generations","generationLimit","exceptionTerminated","fitnessEvaluationNumbers",
          * "timeSpentInFitnessEval","randomSeed","maxValue","minValue","averageValue"
@@ -789,7 +801,12 @@ public class GateController implements Initializable, GenerationEventListener,Al
         public AllPopulationFilter() {
         }
         public boolean pass(Individual<?> individual){
-            return true;
+            double score = individual.getScore();
+            if ((score != Double.NaN) && (score != Double.NEGATIVE_INFINITY) && (score != Double.POSITIVE_INFINITY)){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
-    }
+}
