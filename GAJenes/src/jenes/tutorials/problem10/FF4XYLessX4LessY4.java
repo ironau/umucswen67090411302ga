@@ -18,9 +18,11 @@
  */
 package jenes.tutorials.problem10;
 
+import java.util.logging.Logger;
 import jenes.population.Fitness;
 import jenes.chromosome.DoubleChromosome;
 import jenes.population.Individual;
+import jenes.stage.operator.common.RouletteWheelSelector;
 
 /**
  * This class represent the fitness function for problem 10
@@ -29,6 +31,8 @@ import jenes.population.Individual;
  */
 public class FF4XYLessX4LessY4 extends Fitness<DoubleChromosome> {
 
+    static final Logger log = java.util.logging.Logger.getLogger(RouletteWheelSelector.class.getName()) ;
+    
     public FF4XYLessX4LessY4(boolean... bis) {
         super(bis);
     }
@@ -46,14 +50,20 @@ public class FF4XYLessX4LessY4 extends Fitness<DoubleChromosome> {
         //f(x , y) = - x^4 - y^4 + 4xy 
         double x, y, f, x4, y4;
 
+        
         x = chromosome.getValue(0);
+//        log.fine("Evaluating the X chromosome at index 0. X="+x);
         y = chromosome.getValue(1);
-        x4 = x * x * x * x;
-        y4 = y * y * y * y;
+//        log.fine("Evaluating the Y chromosome at index 1. Y="+y);
+        x4 = Math.pow(x,4);
+        log.fine("X4="+x4);
+        y4 = Math.pow(y,4);
+        log.fine("Y4="+y4);
 
         f = -x4 - y4 + 4 * x * y;
-
+//        log.fine("-X4 - Y4 + 4XY = f ="+f);
         individual.setScore(f);
+        log.fine("set the score to "+individual.getScore());
     }
 
     @Override

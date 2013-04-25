@@ -33,6 +33,8 @@ import jenes.statistics.StatisticsLogger.Loggable;
 import jenes.utils.Random;
 
 import static java.lang.Math.*;
+import java.util.logging.Logger;
+import jenes.stage.operator.common.RouletteWheelSelector;
 
 /**
  * The Population class represents a population of <code>Individual</code>s.
@@ -72,6 +74,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
     private boolean[] sortingBy;
     /** Notify if the population individuals order is coherent */
     private boolean sorted = false;
+static final Logger log = java.util.logging.Logger.getLogger(Population.class.getName()) ;
 
     /**
      * Constructs a new empty population
@@ -947,7 +950,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
 
         /**
          *
-         * Constructs a new Population.Statitics
+         * Constructs a new Population.Statistics
          *
          * @param bis array of flags. Each flag indicates if maximize or minimize the score 
          * for an objective in a specific position.
@@ -1081,6 +1084,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
                 g = new Group<T>(this, collectable);
                 this.groups.put(filter, g);
             }
+            log.fine("added a group "+g.toString());
             return g;
         }
 
@@ -1092,6 +1096,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
          * @return a group
          */
         public Group<T> getGroup(Filter filter) {
+            log.fine("retrieved a group "+this.groups.get(filter));
             return this.groups.get(filter);
         }
 
@@ -1112,6 +1117,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
         @Loggable(label = "LegalScoreAvg")
         @Deprecated
         public final double getLegalScoreAvg() {
+            log.fine("returnung the legal score average "+this.legalScoreAvg);
             return this.legalScoreAvg;
         }
 
@@ -1123,6 +1129,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
         @Loggable(label = "LegalScoreDev")
         @Deprecated
         public final double getLegalScoreDev() {
+            log.fine("returning the legal score deviation "+this.legalScoreDev);
             return this.legalScoreDev;
         }
 
@@ -1134,6 +1141,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
         @Loggable(label = "LegalHighestScore")
         @Deprecated
         public final double getLegalHighestScore() {
+            log.fine("returning the highest legal score"+ this.legalHighestScore);
             return this.legalHighestScore;
         }
 
@@ -1145,6 +1153,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
         @Loggable(label = "LegalHighestIndividual")
         @Deprecated
         public final Individual<T> getLegalHighestIndividual() {
+            log.fine("returning the highest legal score"+ this.legalHighestIndividual);
             return this.legalHighestIndividual;
         }
 
@@ -1156,6 +1165,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
         @Loggable(label = "LegalLowestScore")
         @Deprecated
         public final double getLegalLowestScore() {
+            log.fine("returning the highest legal score"+ this.legalLowestScore);
             return this.legalLowestScore;
         }
 
@@ -1166,6 +1176,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
          */
         @Deprecated
         public final Individual<T> getLegalLowestIndividual() {
+            log.fine("returning the highest legal score"+ this.legalLowestIndividual);
             return this.legalLowestIndividual;
         }
 
@@ -1328,7 +1339,7 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
                 if (this.cardinality == 0) {
 
                     int nObjective = this.mean.length; //equivalent to ind.getNumberOfObjectives();
-                    for (int h = 0; h < nObjective; ++h) {
+                    for (int h = 0; h < nObjective; h++) {
                         double x = scores[h];
 
                         this.mean[h] = x;
@@ -1338,14 +1349,14 @@ public final class Population<T extends Chromosome> implements Iterable<Individu
                     }
 
                 } else {
-
-                    for (int h = 0; h < this.mean.length; ++h) {
+                    for (int h = 0; h < this.mean.length; h++) {
 
                         double x = scores[h];
                         int n = this.cardinality;
-
+                        
                         double mn = this.mean[h];
                         double mn1 = mn + (x - mn) / (n + 1);
+                        
                         double sn = pow(this.sd[h], 2);
 
                         //XXX need formula check

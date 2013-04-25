@@ -770,14 +770,15 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
     protected void onGeneration(long time) {
         // do nothing; override it for a specific behavior
         log.fine("the total individuals in the current population is "+this.getHistoryAt(this.getGeneration()-1).size());
-        Population<T> prevPop = this.getHistoryAt(this.getGeneration()-1);
-        this.getHistoryAt(this.getGeneration()-1).getStatistics().update(prevPop);
-        /*        List<Individual<T>> theIndividuals = currentPopulation.getIndividuals();
-        
-        Iterator it = theIndividuals.iterator();
         double max=Integer.MIN_VALUE;
         double min=Integer.MAX_VALUE;
-        double total=0;
+        double mean=0;
+
+/*        Population<T> prevPop = this.getHistoryAt(this.getGeneration()-1);
+        this.getHistoryAt(this.getGeneration()-1).getStatistics().update(prevPop);
+        List<Individual<T>> theIndividuals = currentPopulation.getIndividuals();
+        
+        Iterator it = theIndividuals.iterator();
         while(it.hasNext()){
             Individual thisIndividual = (Individual) it.next();
             total+=thisIndividual.getScore();
@@ -787,8 +788,13 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
         statistics.setMaxValue(max);
         statistics.setMinValue(min);
         statistics.setAverageValue(total/theIndividuals.size());
-        log.fine("Set the generation statistics [" + max+","+min+","+total/theIndividuals.size()+"]");*/
-        log.fine("Set the generation statistics [" + prevPop.getStatistics().getLegalHighestScore()+","+prevPop.getStatistics().getLegalLowestScore()+","+prevPop.getStatistics().getLegalScoreAvg()+"]");
+        log.fine("Set the generation statistics [" + max+","+min+","+total/theIndividuals.size()+"]"); /*  */
+//        log.fine("Set the generation statistics [" + prevPop.getStatistics().getLegalHighestScore()+","+prevPop.getStatistics().getLegalLowestScore()+","+prevPop.getStatistics().getLegalScoreAvg()+"]");
+       /*Population.Statistics popStats = currentPopulation.getStatistics();
+        max = popStats.getLegalHighestScore();
+        mean = popStats.getLegalScoreAvg();
+        min = popStats.getLegalLowestScore();*/
+        
         
     }
 
@@ -822,10 +828,13 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
         // notify to the population that
         if (this.getFitness() != null) {
+            log.fine("Set the Fitness function to perform the evaluation");
             population.setEvaluatedBy(this.getFitness());
+            log.fine("Set sorting array to the fitness function bigger is beter array");
             population.setSortingBy(this.getFitness().getBiggerIsBetter());
         } else {
             //this is done for backward compatibility
+            log.fine("This fitness function couldn't be found");
             population.setEvaluatedBy(null);
             population.setSortingBy(this.isBiggerBetter());
         }
@@ -834,10 +843,14 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
         statistics.setFitnessEvalStageBegin(this.generation,now);
 
         for (Individual individual : population) {
+            log.fine("looping through the individuals in the population. This individual is"+individual.toString());
             if (!individual.isEvaluated() || forced || this.isFitnessChanged()) {
+                log.fine("This individual needs to be updated");
                 if (this.runner != null) {
+                    log.fine("Evaluating in a thread");
                     this.runner.evaluateIndividual(individual);
                 } else {
+                    log.fine("Evaluating inline");
                     this.evaluateIndividual(individual);
                 }
 
@@ -859,7 +872,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      * Evaluates a single individual. This evaluation of individuals is
      * specifically related to the problem to solve. If the genetic algorithm's body
      * has a {@link Fitness}, this method calls {@link Fitness#evaluate(jenes.population.Individual)}
-     * method, otherwise method requiring an implementation by the sublass.
+     * method, otherwise method requiring an implementation by the subclass.
      * <p>
      *
      * @param individual

@@ -34,8 +34,8 @@ import jenes.utils.Random;
 public final class DoubleChromosome implements Chromosome<DoubleChromosome> {
 
     private double[] genes;
-    private double upperBound = 0.5 * Double.MAX_VALUE;
-    private double lowerBound = 0.5 * Double.MIN_VALUE;
+    private double upperBound = 1.0;
+    private double lowerBound = -1.0;
     private double defaultValue = 0;
 
     /**
@@ -79,9 +79,9 @@ public final class DoubleChromosome implements Chromosome<DoubleChromosome> {
      * the upperBound is defaulted to 1/2 Double.MAX_VLUE
      */
     public DoubleChromosome() {
-        this.genes = new double[3];
-        this.upperBound = 0.5 * Double.MAX_VALUE;
-        this.lowerBound = this.defaultValue = 0.5 * Double.MIN_VALUE;
+        this.genes = new double[2];
+        this.upperBound = Math.random()*this.upperBound;
+        this.lowerBound = this.defaultValue = Math.random() * this.lowerBound;
     }
 
     public final void setDefaultValueAt(final int pos) {

@@ -153,7 +153,7 @@ public abstract class Fitness<C extends Chromosome> extends Plugin implements Cl
      * Initializes the {@link Population} given as parameter by resetting the 
      * scores of all individuals.
      * <p>
-     * @param pop       pupolation to be initialize
+     * @param pop       population to be initialize
      */
     public void init(Population<C> pop) {
         for (Individual<C> ind : pop) {
@@ -397,7 +397,28 @@ public abstract class Fitness<C extends Chromosome> extends Plugin implements Cl
     public final boolean[] getBiggerIsBetter() {
         return this.biggerIsBetter;
     }
+    public final void setBiggerIsBetter(int m, boolean maximize) {
+        assert m > 0 : "Jenes: at least one objective must be declared for Fitness constructor";
 
+        boolean[] bis = new boolean[m];
+        for (int i = 0; i < m; ++i) {
+            bis[i] = maximize;
+        }
+        this.biggerIsBetter = bis;
+    }
+
+    /**
+     *
+     * @param bis
+     */
+    public final void setBiggerIsBetter(boolean... bis) {
+        assert bis.length > 0 : "Jenes: at least one objective must be declared for Fitness constructor";
+
+        this.biggerIsBetter = new boolean[bis.length];
+        System.arraycopy(bis, 0, biggerIsBetter, 0, bis.length);
+    }
+
+    
     /**
      * Returns a positive, negative or zero value according to dominance relation between individuals i1 and i2
      * 

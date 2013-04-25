@@ -24,7 +24,7 @@ import jenes.population.Population;
 import jenes.stage.operator.Mutator;
 
 /**
- * A simple mutation operator. It performes the simplest mutation algorithm according to a specified probability.
+ * A simple mutation operator. It perform s the simplest mutation algorithm according to a specified probability.
  * A chromosome position is randomly chosen and its gene randomized.
  * <p>
  * @param <T> The class of chromosomes to work with.
@@ -45,7 +45,20 @@ public class SimpleMutator<T extends Chromosome> extends Mutator<T> {
     public SimpleMutator(double probability) {
         super(probability);
     }
-
+    /**
+     * Constructs a new simple mutator with the default probability of 10%
+     */
+    public SimpleMutator() {
+        super(0.1);
+    }
+    public void setMutationRate(double mutRate){
+        if ((mutRate>0) && (mutRate<1)){
+            this.probability=mutRate;
+        }else this.probability=0.1;
+    }
+    
+    
+    
     protected void mutate(Individual<T> ind) {
         Chromosome c = ind.getChromosome();
         int size = c.length();

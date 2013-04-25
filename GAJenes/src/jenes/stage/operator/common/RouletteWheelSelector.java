@@ -19,6 +19,7 @@
 package jenes.stage.operator.common;
 
 import java.util.List;
+import java.util.logging.Logger;
 import jenes.chromosome.Chromosome;
 import jenes.population.Individual;
 import jenes.population.Population;
@@ -41,6 +42,7 @@ import jenes.stage.operator.Selector;
  */
 public class RouletteWheelSelector<T extends Chromosome> extends Selector<T> {
 
+    static final Logger log = java.util.logging.Logger.getLogger(RouletteWheelSelector.class.getName()) ;
     double[] cumulativeFit = null;
     double[] fit = null;
     double[] partialFit = null;
@@ -63,18 +65,18 @@ public class RouletteWheelSelector<T extends Chromosome> extends Selector<T> {
         int m = this.fitness != null ? this.fitness.getNumOfObjectives() : 1;
         boolean[] bib = this.fitness != null ? this.fitness.getBiggerIsBetter() : new boolean[]{this.biggerIsBetter};
 
-        for (int i = 0; i < cumulativeFit.length; ++i) {
+        for (int i = 0; i < cumulativeFit.length; i++) {
             cumulativeFit[i] = 0;
         }
+        
 
-        for (int h = 0; h < m; ++h) {
-
+        for (int h = 0; h < m; h++) {
             boolean maximize = bib[h];
 
             double max = Double.MIN_VALUE;
             double min = Double.MAX_VALUE;
 
-            for (int i = 0; i < popsize; ++i) {
+            for (int i = 0; i < popsize; i++) {
                 fit[i] = pop.getIndividual(i).getScore(h);
                 if (fit[i] > max) {
                     max = fit[i];
@@ -85,7 +87,7 @@ public class RouletteWheelSelector<T extends Chromosome> extends Selector<T> {
             }
 
             partialFit[0] = 0;
-            for (int i = 0; i < popsize; ++i) {
+            for (int i = 0; i < popsize; i++) {
                 partialFit[i + 1] = partialFit[i] + (maximize ? fit[i] : max + min - fit[i]);
             }
 
