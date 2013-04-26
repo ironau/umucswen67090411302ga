@@ -16,5 +16,10 @@ public class GATestStage extends AbstractStage{
     public void process(Population in, Population out) throws StageException {
         System.out.println("The GATestStage was executed");
     }
+
+    @Override
+    public void processProperties(String props) {
+        
+    }
     
 }
