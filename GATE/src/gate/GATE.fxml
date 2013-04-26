@@ -35,6 +35,25 @@
       <right>
         <Accordion fx:id="Config" blendMode="SOFT_LIGHT" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="TOP_LEFT">
           <expandedPane>
+            <TitledPane id="AcrdPanQueue" fx:id="x3" animated="false" text="Experiment Queue">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <VBox id="VBox" prefHeight="516.0" prefWidth="200.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <children>
+                        <CheckBox fx:id="AutoRun" alignment="TOP_LEFT" contentDisplay="TOP" mnemonicParsing="false" text="Automatically Run Queue" />
+                        <ListView fx:id="ExperimentQueue" minHeight="-Infinity" minWidth="-Infinity" prefHeight="482.0" prefWidth="200.0" />
+                      </children>
+                      <padding>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                      </padding>
+                    </VBox>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
             <TitledPane fx:id="Props" alignment="TOP_LEFT" animated="false" pickOnBounds="true" text="Properties Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -57,9 +76,6 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-          </expandedPane>
-          <panes>
-            <fx:reference source="Props" />
             <TitledPane fx:id="Stage" animated="false" text="Stage Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -116,15 +132,7 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-            <TitledPane id="AcrdPanQueue" animated="false" text="Experiment Queue">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ListView fx:id="ExperimentQueue" minHeight="-Infinity" minWidth="-Infinity" prefHeight="516.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
+            <fx:reference source="x3" />
           </panes>
           <BorderPane.margin>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />

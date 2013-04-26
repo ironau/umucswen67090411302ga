@@ -19,10 +19,10 @@
       <center>
         <LineChart fx:id="CurProg" cache="true" cacheHint="SPEED" depthTest="ENABLE" horizontalZeroLineVisible="false" minHeight="-Infinity" minWidth="-Infinity" title="" verticalZeroLineVisible="false" BorderPane.alignment="TOP_LEFT">
           <xAxis>
-            <NumberAxis label="Generation" side="BOTTOM" upperBound="500.0" />
+            <NumberAxis label="Generation" side="BOTTOM" upperBound="50.0" />
           </xAxis>
           <yAxis>
-            <NumberAxis forceZeroInRange="false" label="Score" lowerBound="-1.25" side="LEFT" upperBound="1.25" />
+            <NumberAxis forceZeroInRange="false" label="Score" lowerBound="-1.0" side="LEFT" upperBound="1.0" />
           </yAxis>
           <BorderPane.margin>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
@@ -35,6 +35,22 @@
       <right>
         <Accordion fx:id="Config" blendMode="SOFT_LIGHT" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="TOP_LEFT">
           <expandedPane>
+            <TitledPane id="AcrdPanQueue" fx:id="x3" animated="false" text="Experiment Queue">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <VBox id="VBox" alignment="CENTER" prefHeight="516.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <children>
+                        <CheckBox fx:id="AutoRun" mnemonicParsing="false" text="Automatically Run Queue" />
+                        <ListView fx:id="ExperimentQueue" minHeight="-Infinity" minWidth="-Infinity" prefHeight="482.0" prefWidth="200.0" />
+                      </children>
+                    </VBox>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
             <TitledPane fx:id="Props" alignment="TOP_LEFT" animated="false" pickOnBounds="true" text="Properties Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -57,9 +73,6 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-          </expandedPane>
-          <panes>
-            <fx:reference source="Props" />
             <TitledPane fx:id="Stage" animated="false" text="Stage Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -116,15 +129,7 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-            <TitledPane id="AcrdPanQueue" animated="false" text="Experiment Queue">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ListView fx:id="ExperimentQueue" minHeight="-Infinity" minWidth="-Infinity" prefHeight="516.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
+            <fx:reference source="x3" />
           </panes>
           <BorderPane.margin>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />

@@ -26,14 +26,18 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.util.Duration;
 import jenes.AlgorithmEventListener;
 import jenes.GenerationEventListener;
 import jenes.GeneticAlgorithm;
@@ -118,6 +122,8 @@ public class GateController implements Initializable, GenerationEventListener,Al
     Label MessageBar;
     @FXML
     Slider JeneSize;
+    @FXML
+    CheckBox AutoRun;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -766,7 +772,6 @@ public class GateController implements Initializable, GenerationEventListener,Al
             chartDataMean.getData().add(new XYChart.Data(ga.getGeneration(),mean4gen));
             chartDataMin.getData().add(new XYChart.Data(ga.getGeneration(),min4gen));
 
-            
             //Addjust the range on the chart
 //            CurProg.getYAxis().invalidateRange();
             
@@ -799,7 +804,11 @@ public class GateController implements Initializable, GenerationEventListener,Al
         resultsCSVLogger.close();
         runningAlgorithm=null;
         MessageBar.setText(MessageBar.getText()+" Starting Next Experiment");
-        this.StartExperiment(new ActionEvent());
+
+        if(AutoRun.isSelected()){
+            this.StartExperiment(new ActionEvent());
+        }
+        
     }
 
     @Override
@@ -840,9 +849,11 @@ public class GateController implements Initializable, GenerationEventListener,Al
                     log.fine("saved CSV restuls line.");
     }
 
+
     private static class AllPopulationFilter implements Population.Filter{
 
         public AllPopulationFilter() {
+            
         }
         public boolean pass(Individual<?> individual){
             double score = individual.getScore();
@@ -853,4 +864,6 @@ public class GateController implements Initializable, GenerationEventListener,Al
             }
         }
     }
+
 }
+
