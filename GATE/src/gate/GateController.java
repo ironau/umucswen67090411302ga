@@ -43,7 +43,7 @@ import jenes.population.Individual;
 import jenes.population.Population;
 import jenes.stage.AbstractStage;
 import jenes.utils.CSVLogger;
-import jenes.utils.XLSLogger;
+//import jenes.utils.XLSLogger;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginLifecycleException;
@@ -631,6 +631,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
     }
 
     private boolean addStages(GeneticAlgorithm ga) {
+        AbstractStage thisStage=null;
         log.fine("The ordered list of stages is " + selectedStageList.toString());
     //look up the plugin descriptor in the hashmaps?
         for (Iterator it = selectedStageList.iterator(); it.hasNext();){
@@ -648,15 +649,20 @@ public class GateController implements Initializable, GenerationEventListener,Al
                 Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
-        //Add the stage to the GA
+        //Pass the Additional Properties to the stage for self configuration
             try {
-                ga.addStage((AbstractStage) pluginClass.newInstance());
-                log.fine("Added Stage to Algorithm");
+                thisStage =(AbstractStage) pluginClass.newInstance();
             } catch (InstantiationException | IllegalAccessException ex) {
                 Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
                 MessageBar.setText(stageName +" needs a no arg constructor.");
                 return false;
             }
+                String params = AddedParams.getText();
+                if (params == null){params="";}
+                thisStage.processProperties(params);
+        //Add the stage to the GA
+                ga.addStage(thisStage);
+                log.fine("Added Stage to Algorithm");
 
         }
     //Then all stages were added without throwing an error, so return true.
