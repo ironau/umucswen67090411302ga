@@ -41,6 +41,7 @@ import jenes.chromosome.Chromosome;
 import jenes.population.Fitness;
 import jenes.population.Individual;
 import jenes.population.Population;
+import jenes.population.Population.Statistics;
 import jenes.stage.AbstractStage;
 import jenes.utils.CSVLogger;
 //import jenes.utils.XLSLogger;
@@ -774,27 +775,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
             RunningLog.appendText(ga.getTitle()+": Started at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageBegin())+": generation: "+ga.getGeneration()+" [max="+max4gen+", min="+min4gen+", avg="+mean4gen+"]\n");
         /* logging schema is "startTime","generation","randomSeed","maxValue","minValue","averageValue"
          */
-
-/*          The Excel Logger doesn't seem to write lines properly
- *          log.fine("Output line to results Excel file");
-            resultsXSLLogger.setLine(ga.getGeneration());
-            resultsXSLLogger.put("startTime",ga.statistics.getStartTime());
-            resultsXSLLogger.put("generation",ga.getGeneration());
-            resultsXSLLogger.put("randomSeed",ga.statistics.getRandomSeed());
-            resultsXSLLogger.put("maxValue",thisGenStats.getLegalHighestScore());
-            resultsXSLLogger.put("minValue",thisGenStats.getLegalScoreAvg());
-            resultsXSLLogger.put("averageValue",thisGenStats.getLegalLowestScore());
-            resultsXSLLogger.save();
-            log.fine("saved XSL restuls line "+resultsXSLLogger.getLine());*/
-            log.fine("Output line to results CSV file");
-            resultsCSVLogger.put("startTime",ga.statistics.getStartTime());
-            resultsCSVLogger.put("generation",ga.getGeneration());
-            resultsCSVLogger.put("randomSeed",ga.statistics.getRandomSeed());
-            resultsCSVLogger.put("maxValue",thisGenStats.getLegalHighestScore());
-            resultsCSVLogger.put("minValue",thisGenStats.getLegalScoreAvg());
-            resultsCSVLogger.put("averageValue",thisGenStats.getLegalLowestScore());
-            resultsCSVLogger.save();
-            log.fine("saved CSV restuls line.");
+            writeStatistics(ga, thisGenStats);
         }
 
     @Override
@@ -817,8 +798,8 @@ public class GateController implements Initializable, GenerationEventListener,Al
 //        resultsXSLLogger.close();
         resultsCSVLogger.close();
         runningAlgorithm=null;
-/*        MessageBar.setText(MessageBar.getText()+" Starting Next Experiment");
-        this.StartExperiment(new ActionEvent());*/
+        MessageBar.setText(MessageBar.getText()+" Starting Next Experiment");
+        this.StartExperiment(new ActionEvent());
     }
 
     @Override
@@ -834,6 +815,29 @@ public class GateController implements Initializable, GenerationEventListener,Al
         CurProg.getData().add(chartDataMax);
         CurProg.getData().add(chartDataMean);
         CurProg.getData().add(chartDataMin);
+    }
+
+    private void writeStatistics(GeneticAlgorithm ga, Statistics thisGenStats) {
+        /*          The Excel Logger doesn't seem to write lines properly
+         *          log.fine("Output line to results Excel file");
+                    resultsXSLLogger.setLine(ga.getGeneration());
+                    resultsXSLLogger.put("startTime",ga.statistics.getStartTime());
+                    resultsXSLLogger.put("generation",ga.getGeneration());
+                    resultsXSLLogger.put("randomSeed",ga.statistics.getRandomSeed());
+                    resultsXSLLogger.put("maxValue",thisGenStats.getLegalHighestScore());
+                    resultsXSLLogger.put("minValue",thisGenStats.getLegalScoreAvg());
+                    resultsXSLLogger.put("averageValue",thisGenStats.getLegalLowestScore());
+                    resultsXSLLogger.save();
+                    log.fine("saved XSL restuls line "+resultsXSLLogger.getLine());*/
+                    log.fine("Output line to results CSV file");
+                    resultsCSVLogger.put("startTime",ga.statistics.getStartTime());
+                    resultsCSVLogger.put("generation",ga.getGeneration());
+                    resultsCSVLogger.put("randomSeed",ga.statistics.getRandomSeed());
+                    resultsCSVLogger.put("maxValue",thisGenStats.getLegalHighestScore());
+                    resultsCSVLogger.put("minValue",thisGenStats.getLegalScoreAvg());
+                    resultsCSVLogger.put("averageValue",thisGenStats.getLegalLowestScore());
+                    resultsCSVLogger.save();
+                    log.fine("saved CSV restuls line.");
     }
 
     private static class AllPopulationFilter implements Population.Filter{
