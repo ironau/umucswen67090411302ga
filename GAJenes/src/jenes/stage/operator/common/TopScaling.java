@@ -36,13 +36,13 @@ import jenes.stage.operator.Scaling;
  */
 public class TopScaling<T extends Chromosome> extends Scaling<T> {
 
-    /** The defaulf fraction */
+    /** The default fraction */
     public static double DEFAULT_FRACTION = 0.4;
 
     /** The fraction */
     private double fraction;
     
-    /** The quantitiy */
+    /** The quantity */
     private int quantity;
 
     /** Creates an instance with default fraction */
@@ -147,6 +147,11 @@ public class TopScaling<T extends Chromosome> extends Scaling<T> {
         }
 
        
+    }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
     }
 
 }

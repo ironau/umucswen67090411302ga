@@ -65,4 +65,9 @@ public class TSPMutator extends Mutator<IntegerChromosome> {
             }
         }
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info("recieve properties\n"+props);
+    }
 }

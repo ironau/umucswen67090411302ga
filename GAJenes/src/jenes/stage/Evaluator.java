@@ -83,4 +83,9 @@ public class Evaluator<T extends Chromosome> extends AbstractStage<T> {
         in.swap(out);
     }
 
+    @Override
+    public void processProperties(String props) {
+        log.info("recieve properties\n"+props);
+    }
+
 }

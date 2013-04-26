@@ -132,4 +132,9 @@ public class RouletteWheelSelector<T extends Chromosome> extends Selector<T> {
         return list.get(p);
     }
 
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
+
 }

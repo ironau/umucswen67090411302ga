@@ -36,6 +36,11 @@ import jenes.stage.operator.Selector;
  */
 public class DeJongCrowder<T extends Chromosome> extends Crowder<T> {
 
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
+
     /** Provides the available selection methods */
     public static enum SelectionMethod {
 

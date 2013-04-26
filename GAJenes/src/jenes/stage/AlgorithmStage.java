@@ -72,4 +72,9 @@ public class AlgorithmStage<T extends Chromosome> extends AbstractStage<T> {
         algorithm.evolve(in);
         out.setAs(algorithm.getCurrentPopulation());
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info("recieve properties\n"+props);
+    }
 }

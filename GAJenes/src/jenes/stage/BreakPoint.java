@@ -37,6 +37,11 @@ import jenes.population.Population;
  */
 public class BreakPoint<T extends Chromosome> extends AbstractStage<T> {
 
+    @Override
+    public void processProperties(String props) {
+        log.info("recieve properties\n"+props);
+    }
+
 	/**
 	 * Abstract class representing a break point listener.
 	 * When the process method of a break point stage is inciked by a Genetic Algorithm

@@ -83,5 +83,10 @@ public class TwoPointsCrossover<T extends Chromosome> extends Crossover<T>{
         else
             chromC1.cross(chromC2,pos2,pos1);
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
     
 }

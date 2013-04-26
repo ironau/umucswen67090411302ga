@@ -60,4 +60,9 @@ public class ProportionalScaling<T extends Chromosome> extends Scaling<T> {
         
     }
 
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
+
 }

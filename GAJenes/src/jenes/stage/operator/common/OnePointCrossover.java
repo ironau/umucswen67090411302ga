@@ -73,5 +73,10 @@ public class OnePointCrossover<T extends Chromosome> extends Crossover<T>{
         int pos = random.nextInt(0,min);
         chromC1.cross(chromC2,pos);
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
     
 }

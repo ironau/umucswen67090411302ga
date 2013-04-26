@@ -65,4 +65,9 @@ public class SimpleMutator<T extends Chromosome> extends Mutator<T> {
         int pos = random.nextInt(0, size);
         c.randomize(pos);
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
 }

@@ -1271,4 +1271,8 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
     public void setTaskTitle(final String newTitle){
         super.updateTitle(newTitle);
     }
+
+    public void processProperities(String props){
+        log.info("recieve properties\n"+props);
+    }
 }

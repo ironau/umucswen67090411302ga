@@ -186,4 +186,11 @@ public abstract class AbstractStage<T extends Chromosome> extends Plugin{
      System.out.print(this.getDescriptor());
      System.out.println(this.getClass());
     }
+    
+    /**  processProperties allows for providing a string with a list of additional properties.
+     * each stage is responsible for parsing the string and setting its values accordingly.
+     *
+     * @param props
+     */
+    public abstract void processProperties(String props);
 }

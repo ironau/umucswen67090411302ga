@@ -234,4 +234,9 @@ public class Sequence<T extends Chromosome> extends AbstractStage<T> {
      System.out.print(this.getDescriptor());
      System.out.println(this.getClass());
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info("recieve properties\n"+props);
+    }
 }

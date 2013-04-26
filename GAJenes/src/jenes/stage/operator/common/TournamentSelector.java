@@ -42,7 +42,7 @@ import jenes.stage.operator.Selector;
  */
 public class TournamentSelector<T extends Chromosome> extends Selector<T> {
     
-    /** the number of tournament attemps */
+    /** the number of tournament attempts */
     private int attempts;
 
     /**
@@ -88,6 +88,11 @@ public class TournamentSelector<T extends Chromosome> extends Selector<T> {
         }
         
         return candidate;
+    }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
     }
     
 }

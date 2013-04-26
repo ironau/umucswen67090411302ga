@@ -223,4 +223,10 @@ public class TSPCrossover extends Crossover<IntegerChromosome> {
         TSPCrossover tsp = new TSPCrossover(1);
         tsp.cross(inds);
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info("recieve properties\n"+props);
+    }
+
 }

@@ -123,4 +123,9 @@ public class HeuristicCrossover<T extends DoubleChromosome> extends Crossover<T>
 
         c0.average(c1, r);
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
 }

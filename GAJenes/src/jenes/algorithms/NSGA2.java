@@ -138,5 +138,13 @@ public class NSGA2<T extends Chromosome> extends CrowdingGA<T> {
             }
         }
 
+        @Override
+        public void processProperties(String props) {
+            log.info("recieve properties\n"+props);
+        }
+
+    }
+    public void processProperities(String props){
+        
     }
 }

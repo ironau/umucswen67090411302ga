@@ -134,5 +134,10 @@ public class TSPCityCenteredCrossover extends Crossover<IntegerChromosome>{
         }
         return -1;
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
     
 }

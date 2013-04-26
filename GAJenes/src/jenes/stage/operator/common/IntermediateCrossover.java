@@ -118,4 +118,9 @@ public class IntermediateCrossover<T extends DoubleChromosome> extends Crossover
 
         c0.average(c1, r);
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
 }

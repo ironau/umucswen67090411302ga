@@ -97,4 +97,9 @@ public class TSPScrambleMutator extends Mutator<IntegerChromosome> {
             }
         }
     }
+
+    @Override
+    public void processProperties(String props) {
+        log.info(this.getClass().toString()+"recieve properties\n"+props);
+    }
 }
