@@ -63,7 +63,7 @@ public class CSVLogger extends AbstractLogger {
      * @throws java.io.FileNotFoundException
      */
     public CSVLogger(String[] schema, String filename) throws FileNotFoundException {
-       this(schema, filename, "\t", true);
+       this(schema, filename, ",", true);
     }
 
     /**
@@ -118,15 +118,16 @@ public class CSVLogger extends AbstractLogger {
         String line = "";
         boolean first = true;
         for( String key : record.keySet()  ) {
-            line += (first ? "" : separator+" ") + record.get(key);
+            line += (first ? "\"" : "\""+separator+"\"") + record.get(key);
             first = false;
         }
 
-        buffer.write(line + "\n");
+        buffer.write(line + "\"\n");
     }
 
     @Override
     protected void doSave() {
+        store();
         out.print( buffer );
         out.flush();
         buffer = new StringWriter();
@@ -142,10 +143,10 @@ public class CSVLogger extends AbstractLogger {
         String hd = "";
         boolean first = true;
         for( String s : schema ) {
-            hd += (first ? "" : separator+" ") + s;
+            hd += (first ? "\"" : "\""+separator+"\"") + s;
             first = false;
         }
-
+        hd+="\"";
         out.println(hd);
     }
     

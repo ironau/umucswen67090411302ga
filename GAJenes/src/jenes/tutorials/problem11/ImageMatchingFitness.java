@@ -47,7 +47,7 @@ public class ImageMatchingFitness extends Fitness<BitwiseChromosome> {
     private int target_degrees = 0;
     /** the target to match */
     private BufferedImage target;
-    /** the source image (without trasformations) */
+    /** the source image (without transformations) */
     private BufferedImage source;
     /**
      * The reference image "signature" (25 representative pixels, each in R,G,B).
@@ -64,6 +64,10 @@ public class ImageMatchingFitness extends Fitness<BitwiseChromosome> {
     private int rotateAnchorX;
     private int rotateAnchorY;
 
+    public ImageMatchingFitness() {
+        this(45);
+    }
+    
     /**
      * Default constructor
      */

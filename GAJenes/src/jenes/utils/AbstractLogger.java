@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * This class provides basic support and interface for logging on different media.
@@ -33,6 +34,7 @@ import java.util.Map;
  */
 public abstract class AbstractLogger {
 
+    static final Logger log = java.util.logging.Logger.getLogger(AbstractLogger.class.getName()) ;
     /** The statistics schema */
     protected List<String> schema = null;
 

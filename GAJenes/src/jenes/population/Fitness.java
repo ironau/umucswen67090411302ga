@@ -477,16 +477,24 @@ public abstract class Fitness<C extends Chromosome> extends Plugin implements Cl
             throw new IllegalStateException("[Jenes]: individuals must have scores compatible with the number of objectives!");
         }
 
+        int totaldominance=0;
         for (int i = 0; i < m; ++i) {
 
             boolean gt = bis[i];
 
-            if (gt && !(s1[i] > s2[i]) || !gt && !(s1[i] < s2[i])) {
-                return false;
+            //does S1 dominate S2 for THIS objective
+            if (gt && (s1[i] > s2[i]) ) {
+                //I'm looking for S1 bigger than S2 and it is: so Dominance is shown
+                totaldominance++;
+            }else if (gt && (s1[i] < s2[i])){
+                //I'm looking for S1 bigger than S2 and it is NOT: so Dominance is false
+                totaldominance++;
             }
+            //I'm looking for bigger and S1 and S2 are the same: so no Dominance tied.  Don't change dominance score
+            
         }
 
-        return true;
+        return totaldominance >0 ? true:false;
     }
 
     /**

@@ -195,7 +195,7 @@
         <package-plugin pluginclass="jenes.chromosome.PermutationChromosome" pluginLocation="${dist.jar.dir}" libraryID="PermutationChromosome" 
             pluginID="jenes.chromosome.PermutationChromosome" extensionClass="jenes.chromosome.Chromosome"/>
         <package-plugin pluginclass="jenes.stage.operator.common.SimpleMutator" pluginLocation="${dist.jar.dir}" libraryID="SimpleMutator" 
-            pluginID="jenes.stage.operator.common.SimpleMutator" extensionClass="jenes.chromosome.Mutator"/>
+            pluginID="jenes.stage.operator.common.SimpleMutator" extensionClass="jenes.stage.operator.Mutator"/>
         <package-plugin pluginclass="jenes.stage.operator.common.RouletteWheelSelector" pluginLocation="${dist.jar.dir}" libraryID="RouletteWheelSelector" 
             pluginID="jenes.stage.operator.common.RouletteWheelSelector" extensionClass="jenes.stage.operator.Selector"/>
         <package-plugin pluginclass="jenes.stage.operator.common.TournamentSelector" pluginLocation="${dist.jar.dir}" libraryID="TournamentSelector" 
@@ -219,12 +219,14 @@
         <package-plugin pluginclass="jenes.stage.operator.common.TwoPointsCrossover" pluginLocation="${dist.jar.dir}" libraryID="TwoPointsCrossover" 
             pluginID="jenes.stage.operator.common.TwoPointsCrossover" extensionClass="jenes.stage.operator.Crossover"/>
         <package-plugin pluginclass="jenes.stage.operator.common.SimpleMutator" pluginLocation="${dist.jar.dir}" libraryID="SimpleMutator" 
-            pluginID="jenes.stage.operator.common.SimpleMutator" extensionClass="jenes.stage.operator.Mutator" chromosomeType="jenes.chromosome.DoubleChromosome"/>
-        <package-plugin pluginclass="jenes.stage.operator.common.SimpleMutator" pluginLocation="${dist.jar.dir}" libraryID="SimpleMutator" 
             pluginID="jenes.stage.operator.common.SimpleMutator" extensionClass="jenes.chromosome.Mutator"/>
         <package-plugin pluginclass="jenes.tutorials.problem10.FF4XYLessX4LessY4" pluginLocation="${dist.jar.dir}" libraryID="FF4XYLessX4LessY4" 
             pluginID="jenes.tutorials.problem10.FF4XYLessX4LessY4" extensionClass="jenes.population.Fitness" chromosomeType="jenes.chromosome.DoubleChromosome" toolTip="Sovles the equation 4xy -x^4 -y^4.  Requires a DoubleChromosome."/>
         <package-plugin pluginclass="jenes.tutorials.problem10.FF4WhatXisBestY" pluginLocation="${dist.jar.dir}" libraryID="FF4WhatXisBestY" 
             pluginID="jenes.tutorials.problem10.FF4WhatXisBestY" extensionClass="jenes.population.Fitness" chromosomeType="jenes.chromosome.DoubleChromosome" toolTip="DoubleChromosome."/>
+<!-- the target file doesn't exist for this fitness funciton
+        <package-plugin pluginclass="jenes.tutorials.problem11.ImageMatchingFitness" pluginLocation="${dist.jar.dir}" libraryID="ImageMatchingFitness" 
+            pluginID="jenes.tutorials.problem11.ImageMatchingFitness" extensionClass="jenes.population.Fitness" chromosomeType="jenes.chromosome.BitwiseChromosome" toolTip="BitwiseChromosome."/>
+            -->
     </target>
 </project>

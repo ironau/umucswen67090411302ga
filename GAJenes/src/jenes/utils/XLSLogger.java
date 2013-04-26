@@ -1,4 +1,4 @@
-/*
+ /*
  * JENES
  * A time and memory efficient Java library for genetic algorithms and more 
  * Copyright (C) 2011 Intelligentia srl
@@ -48,7 +48,7 @@ import jxl.write.biff.RowsExceededException;
  * 
  * Data are stored in the first column having the data label as header.
  * It does not matter in which sheet. Recording can start from any row.
- * From which row to start recording can be decided at istantiation or execution time.
+ * From which row to start recording can be decided at instantiation or execution time.
  * 
  * The class can work with an empty file or with a template provided at instantiation time.
  * Using a template is a helpful with macros and plots, in order to make ready-to-use reports.
@@ -60,6 +60,7 @@ import jxl.write.biff.RowsExceededException;
  */
 public class XLSLogger extends AbstractLogger {
 
+    static final Logger log = java.util.logging.Logger.getLogger(XLSLogger.class.getName()) ;
     private static String SCORES_LABEL = "Scores";
     private static String CHROMOSOME_LABEL = "Chromosome";
     private String filename;
@@ -71,8 +72,8 @@ public class XLSLogger extends AbstractLogger {
     private Map<String, Boolean> alterableSchema = new HashMap<String, Boolean>();
 
     /**
-     * Istantiates a new logger with a given schema.
-     * Data are saved by defualt in the workbook jenes.log.xls.
+     * Instantiates a new logger with a given schema.
+     * Data are saved by default in the workbook jenes.log.xls.
      * Recording starts from row 1.
      *
      * @param schema - the field labels
@@ -83,7 +84,7 @@ public class XLSLogger extends AbstractLogger {
     }
 
     /**
-     * Istantiates a new logger with a given schema.
+     * Instantiates a new logger with a given schema.
      * Recording starts from row 1.
      *
      * @param schema - the field labels
@@ -95,7 +96,7 @@ public class XLSLogger extends AbstractLogger {
     }
 
     /**
-     * Istantiates a new logger with a given schema.
+     * Instantiates a new logger with a given schema.
      *
      * @param schema - the field labels
      * @param filename - the workbook filename
@@ -207,11 +208,12 @@ public class XLSLogger extends AbstractLogger {
      */
     public void setLine(int line) {
         this.line = line;
+        log.fine("set the workbook line to: "+line);
     }
 
     /**
-     * Rovides the workbook used for writing the statistics.
-     * See JExcelApi documentation for futher information.
+     * Provides the workbook used for writing the statistics.
+     * See JExcelApi documentation for further information.
      *
      * @return the workbook
      */
@@ -222,6 +224,7 @@ public class XLSLogger extends AbstractLogger {
 
     @Override
     protected void store() {
+        log.fine("writing a cell");
         for (String key : record.keySet()) {
 
             WritableSheet sh = sheets.get(key);
@@ -243,6 +246,7 @@ public class XLSLogger extends AbstractLogger {
                 if (cell != null) {
                     //... the cell is for a single value
                     sheet.addCell(cell);
+                    log.fine(" Wrote the "+key +" value of "+value+" to the sheet into line "+line);
                 } else if (!this.newCols.isEmpty()) {
                     //... we have to store multiple values enlarging the schema
                     for (WritableCell wc : this.newCols) {
@@ -263,7 +267,9 @@ public class XLSLogger extends AbstractLogger {
     @Override
     protected void doSave() {
         try {
+            store();
             this.workbook.write();
+            log.fine("just wrote to the workbook.");
         } catch (IOException ex) {
             Logger.getLogger(XLSLogger.class.getName()).log(Level.SEVERE, null, ex);
         }

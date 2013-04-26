@@ -56,14 +56,14 @@ public class FF4XYLessX4LessY4 extends Fitness<DoubleChromosome> {
         y = chromosome.getValue(1);
 //        log.fine("Evaluating the Y chromosome at index 1. Y="+y);
         x4 = Math.pow(x,4);
-        log.fine("X4="+x4);
+        log.finer("X4="+x4);
         y4 = Math.pow(y,4);
-        log.fine("Y4="+y4);
+        log.finer("Y4="+y4);
 
         f = -x4 - y4 + 4 * x * y;
 //        log.fine("-X4 - Y4 + 4XY = f ="+f);
         individual.setScore(f);
-        log.fine("set the score to "+individual.getScore());
+        log.finer("set the score to "+individual.getScore());
     }
 
     @Override

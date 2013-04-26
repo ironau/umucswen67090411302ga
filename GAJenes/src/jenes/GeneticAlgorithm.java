@@ -34,6 +34,8 @@ import jenes.stage.AbstractStage;
 import jenes.stage.Sequence;
 import jenes.stage.StageException;
 import jenes.statistics.Statistics;
+import jenes.utils.multitasking.MultiThreadEvaluator;
+import jenes.utils.multitasking.MultiThreadRunner;
 import jenes.utils.multitasking.Runner;
 
 /**
@@ -218,7 +220,9 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
     @Override
     protected Object call() throws Exception {
         log.fine("Genetic Algorithm Started: "+ this.getTitle());
-        evolve(true);
+        MultiThreadRunner r = new MultiThreadEvaluator(1);
+        r.execute(this, true);
+        //evolve(true);
         return statistics;
     }
 
@@ -769,7 +773,7 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
      */
     protected void onGeneration(long time) {
         // do nothing; override it for a specific behavior
-        log.fine("the total individuals in the current population is "+this.getHistoryAt(this.getGeneration()-1).size());
+        log.finer("the total individuals in the current population is "+this.getHistoryAt(this.getGeneration()-1).size());
         double max=Integer.MIN_VALUE;
         double min=Integer.MAX_VALUE;
         double mean=0;
@@ -828,13 +832,13 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
 
         // notify to the population that
         if (this.getFitness() != null) {
-            log.fine("Set the Fitness function to perform the evaluation");
+            log.finer("Set the Fitness function to perform the evaluation");
             population.setEvaluatedBy(this.getFitness());
-            log.fine("Set sorting array to the fitness function bigger is beter array");
+            log.finer("Set sorting array to the fitness function bigger is beter array");
             population.setSortingBy(this.getFitness().getBiggerIsBetter());
         } else {
             //this is done for backward compatibility
-            log.fine("This fitness function couldn't be found");
+            log.finer("This fitness function couldn't be found");
             population.setEvaluatedBy(null);
             population.setSortingBy(this.isBiggerBetter());
         }
@@ -843,14 +847,14 @@ public class GeneticAlgorithm<T extends Chromosome> extends Task{
         statistics.setFitnessEvalStageBegin(this.generation,now);
 
         for (Individual individual : population) {
-            log.fine("looping through the individuals in the population. This individual is"+individual.toString());
+            log.finer("looping through the individuals in the population. This individual is"+individual.toString());
             if (!individual.isEvaluated() || forced || this.isFitnessChanged()) {
                 log.fine("This individual needs to be updated");
                 if (this.runner != null) {
-                    log.fine("Evaluating in a thread");
+                    log.finest("Evaluating in a thread");
                     this.runner.evaluateIndividual(individual);
                 } else {
-                    log.fine("Evaluating inline");
+                    log.finest("Evaluating inline");
                     this.evaluateIndividual(individual);
                 }
 

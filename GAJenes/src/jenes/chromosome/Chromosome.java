@@ -123,7 +123,7 @@ public interface Chromosome<T extends Chromosome> extends Cloneable {
     /**
      * Compares the chromosome with another.
      *
-     * @param chromosome the cromosome to compare to.
+     * @param chromosome the chromosome to compare to.
      * @return true if the two chromosome are equal, false otherwise.
      */
     public boolean equals(T chromosome);

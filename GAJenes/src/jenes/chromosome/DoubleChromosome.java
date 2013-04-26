@@ -34,8 +34,8 @@ import jenes.utils.Random;
 public final class DoubleChromosome implements Chromosome<DoubleChromosome> {
 
     private double[] genes;
-    private double upperBound = 1.0;
-    private double lowerBound = -1.0;
+    private double upperBound = 10.0;
+    private double lowerBound = -10.0;
     private double defaultValue = 0;
 
     /**
