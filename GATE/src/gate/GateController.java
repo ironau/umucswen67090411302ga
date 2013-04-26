@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,19 +31,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.ValueAxis;
-import javafx.scene.chart.ValueAxisBuilder;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import jenes.AlgorithmEventListener;
 import jenes.GenerationEventListener;
 import jenes.GeneticAlgorithm;
@@ -50,8 +42,7 @@ import jenes.population.Fitness;
 import jenes.population.Individual;
 import jenes.population.Population;
 import jenes.stage.AbstractStage;
-import jenes.statistics.Statistics;
-import jenes.utils.Random;
+import jenes.utils.CSVLogger;
 import jenes.utils.XLSLogger;
 import org.java.plugin.JpfException;
 import org.java.plugin.ObjectFactory;
@@ -67,7 +58,7 @@ import org.java.plugin.standard.StandardPluginLocation;
 public class GateController implements Initializable, GenerationEventListener,AlgorithmEventListener{
 
     private PluginManager pluginManager= ObjectFactory.newInstance().createManager();
-    private SimpleDateFormat runningLogDateFormat = new SimpleDateFormat("ddMMyyy-HH:mm:ss.SSS");
+    private SimpleDateFormat runningLogDateFormat = new SimpleDateFormat("ddMMMyyy-HHmmss.SSS");
     static final Logger log = java.util.logging.Logger.getLogger(GATE.class.getName()) ;
     private Map<String, Identity> publishedPlugins;
     private PluginRegistry plugReg = pluginManager.getRegistry();
@@ -84,14 +75,14 @@ public class GateController implements Initializable, GenerationEventListener,Al
     private HashMap genericStages = new HashMap<String,PluginDescriptor>();
     private HashMap chromosomeTypes = new HashMap<String,PluginDescriptor>();
     private HashMap experiments = new HashMap<String,GeneticAlgorithm>();
-    private XLSLogger resultsLogger;
-    String resultsLoggerSchema[] = {"startTime","stopTime","initTime","executionTime","generations","generationLimit",
-            "exceptionTerminated","fitnessEvaluationNumbers","timeSpentInFitnessEval",
-            "randomSeed","maxValue","minValue","averageValue"};
-    
+//    private XLSLogger resultsXSLLogger= null;
+    private CSVLogger resultsCSVLogger= null;
+    String resultsLoggerSchema[] = {"startTime","generation","randomSeed","maxValue","minValue","averageValue"};
     long maxPopSize;
     float mutationRate;
     long maxGenerations;
+    GeneticAlgorithm runningAlgorithm=null;
+    
     
     
     @FXML
@@ -184,14 +175,14 @@ public class GateController implements Initializable, GenerationEventListener,Al
         gaStages.addAll(configureExtensionPoint("jenes.stage.operator.Crowder",genericStages));
         stageList = FXCollections.observableArrayList(gaStages);
         AvailStages.setItems(stageList); 
-        log.fine("tied the available stage plugins to the list view");
+        log.finer("tied the available stage plugins to the list view");
         log.exiting("configureStages", this.getClass().toString());
 
         ArrayList gaChromosomes = new ArrayList();
         gaChromosomes.addAll(configureExtensionPoint("jenes.chromosome.Chromosome",chromosomeTypes));
         chromList = FXCollections.observableArrayList(gaChromosomes);
         ChromSelect.setItems(chromList); 
-        log.fine("tied the available chromosome plugins to the list view");
+        log.finer("tied the available chromosome plugins to the list view");
         log.exiting("configureStages", this.getClass().toString());
 
         //fitnessFunctionList
@@ -200,7 +191,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
         gaFitnessFunctions.addAll(configureExtensionPoint("jenes.population.Fitness",fitnessFunctions));
         fitnessFunctionList = FXCollections.observableArrayList(gaFitnessFunctions);
         SelectedFitnessFunction.setItems(fitnessFunctionList); 
-        log.fine("tied the available Fitness Function plugins to the list view");
+        log.finer("tied the available Fitness Function plugins to the list view");
 
         log.exiting("configureStages", this.getClass().toString());
     }
@@ -296,6 +287,13 @@ public class GateController implements Initializable, GenerationEventListener,Al
         } catch (SecurityException ex) {
             Logger.getLogger(GATE.class.getName()).log(Level.SEVERE, null, ex);
         }
+        try {
+            //Setup the XLS data logger
+//            resultsXSLLogger = new XLSLogger(resultsLoggerSchema,"AllExperimentsData.xls");
+            resultsCSVLogger= new CSVLogger(resultsLoggerSchema,"AllExperimentsData.csv");
+        } catch (IOException ex) {
+            Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
    }
     
@@ -348,7 +346,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
             try {
                 locations[i]=StandardPluginLocation.create(plugins[i]);
                 log.fine("Loaded plugin from file "+plugins[i].getName());
-                log.fine("Location array is "+locations[i].getContextLocation());
+                log.finer("Location array is "+locations[i].getContextLocation());
             } catch (NullPointerException npe){
                 log.log(Level.FINE,"File invalid "+plugins[i].getName(),npe);
             }catch (Exception e) {
@@ -357,10 +355,10 @@ public class GateController implements Initializable, GenerationEventListener,Al
         }
         try{
             for (PluginManager.PluginLocation loc : locations){
-                log.info(loc.hashCode()+" "+loc.getContextLocation());
+                log.finer(loc.hashCode()+" "+loc.getContextLocation());
             }
             Map<String, Identity> publishPlugins = pluginManager.publishPlugins(locations);
-            log.fine("Finished Loading plugins from "+pluginsDir.getName());
+            log.finer("Finished Loading plugins from "+pluginsDir.getName());
         } catch (JpfException jpfe){
             log.log(Level.WARNING,"Failed to publish plugins, Plugin Framework exception ",jpfe);
             System.exit(-1);
@@ -492,7 +490,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
             ff.setBiggerIsBetter((int) Math.floor(JeneSize.getValue()), true);
         //Create the Genetic Algorithm
             Date date = new Date(System.currentTimeMillis());
-            SimpleDateFormat df = new SimpleDateFormat("ddMMyyy-HH:mm:ss.SSS");
+            SimpleDateFormat df = new SimpleDateFormat("ddMMMyyy-HHmmss.SSS");
             String title = selectedFF + "-"+ df.format(date);
             GeneticAlgorithm ga = new GeneticAlgorithm(ff,pop,maxGenerations);
             ga.setTaskTitle(title);
@@ -516,13 +514,22 @@ public class GateController implements Initializable, GenerationEventListener,Al
      * @param event 
      */
         public void StartExperiment(ActionEvent event) {
-        //clear output before starting
+            if (runningAlgorithm != null){
+                MessageBar.setText("Cannot Start: There is currently an experiment running");
+                return;
+            }
+            if (event.getSource()==null){
+                log.fine("This was started from the OnApplicaitonStop listner");
+            }
+            MessageBar.setText("Starting Experiment: ");
+            //clear output before starting
             RunningLog.setText("");
-            CurProg.getData().clear();
+            CurProg.getData().removeAll(chartDataMax);
+            CurProg.getData().removeAll(chartDataMean);
+            CurProg.getData().removeAll(chartDataMin);
             chartDataMax.getData().clear();
             chartDataMean.getData().clear();
             chartDataMin.getData().clear();
-            setupChart();
             
             GeneticAlgorithm ga=null;
             String experimentTitle="";
@@ -534,27 +541,37 @@ public class GateController implements Initializable, GenerationEventListener,Al
         //If no selected experiment, then start the first in the list
             if (ExperimentQueue.getSelectionModel().isEmpty()){
             //This is a neat trick I clear the not selected item and the set the selected item to the first item 
-                ExperimentQueue.getSelectionModel().clearAndSelect(0);
+                ExperimentQueue.getSelectionModel().select(0);
             }
 
         //Start the selected experiment
             experimentTitle= (String) ExperimentQueue.getSelectionModel().getSelectedItem();
-            log.fine("Event: a chromosome was selected " + experimentTitle);
+            log.fine("Event: a experiment was started " + experimentTitle);
             ga = (GeneticAlgorithm) experiments.get(experimentTitle);
             assert ga != null : "The genetic Algorithm was mull cannot start.";
+            log.fine("The experiment found was "+ga.getTitle());
             ga.addGenerationEventListener(this);
             ga.addAlgorithmEventListener(this);
-            MessageBar.setText("Starting Experiment:" +ga.getTitle());
-
-        /*Create an XLS Logfile
+            setupChart();
+            MessageBar.setText("Conductin Experiment: " +ga.getTitle());
+            runningAlgorithm = ga;
+        //Create an XLS Logfile
+            Path resultsXSLLoggerLocation = Paths.get(System.getProperty("user.home"),ga.getTitle()+".xls");
+            Path resultsCSVLoggerLocation = Paths.get(System.getProperty("user.home"),ga.getTitle()+".csv");
             try {
-                resultsLogger = new XLSLogger(resultsLoggerSchema,ga.getTitle());
+//                resultsXSLLogger = new XLSLogger(resultsLoggerSchema,resultsXSLLoggerLocation.toString());
+                resultsCSVLogger = new CSVLogger(resultsLoggerSchema,resultsCSVLoggerLocation.toString());
             } catch (IOException ex) {
                 Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
+            }
             
         //Now Start The Experiment
-//            new Thread(ga);
+/*            Thread thisExperiment = new Thread(ga);
+            log.fine("setup the thread.  the Call method was called");
+            thisExperiment.setDaemon(true);
+            log.fine("set the threadinto Daemon mode. about to call start");
+            thisExperiment.start();
+            log.fine("finished the call to start()");*/
             ga.evolve();
         }
     /**
@@ -563,8 +580,17 @@ public class GateController implements Initializable, GenerationEventListener,Al
      * @param event 
      */
         public void AbortExperiment(ActionEvent event) {
-            ObservableList selectedFF = (ObservableList) SelectedFitnessFunction.getSelectionModel().getSelectedItem();
-            log.fine("Event: a chromosome was selected " + selectedFF);
+            if(runningAlgorithm == null){
+                return;
+            }
+            log.fine("Aborting Experiment "+runningAlgorithm.getTitle());
+            runningAlgorithm.cancel(true);
+            MessageBar.setText(runningAlgorithm.getTitle()+ "was aborted");
+            experimentQueueList.remove(runningAlgorithm.getTitle()); 
+            experiments.remove(runningAlgorithm.getTitle());
+            ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
+
+            runningAlgorithm=null;
             //todo: Stop the current experiment.
         }
 
@@ -740,33 +766,35 @@ public class GateController implements Initializable, GenerationEventListener,Al
             log.fine("graph is updated for generation: "+ga.getGeneration()+"with max="+max4gen+" min="+min4gen+" avg="+mean4gen);
 //            RunningLog.setPrefRowCount(RunningLog.getPrefRowCount()+1);
             RunningLog.appendText(ga.getTitle()+": Started at "+runningLogDateFormat.format(ga.statistics.getFitnessEvalStageBegin())+": generation: "+ga.getGeneration()+" [max="+max4gen+", min="+min4gen+", avg="+mean4gen+"]\n");
-        /* logging schema is "startTime","stopTime","initTime","executionTime",
-         * "generations","generationLimit","exceptionTerminated","fitnessEvaluationNumbers",
-         * "timeSpentInFitnessEval","randomSeed","maxValue","minValue","averageValue"
+        /* logging schema is "startTime","generation","randomSeed","maxValue","minValue","averageValue"
          */
 
-//Currently this blows up because the new logger file has gone out of scope from when it was created.  grr.
-            
-/*            resultsLogger.setLine(ga.getGeneration());
-            resultsLogger.put("startTime",thisGenStats.getStartTime());
-            resultsLogger.put("stopTime",thisGenStats.getStopTime());
-            resultsLogger.put("initTime",thisGenStats.getInitTime());
-            resultsLogger.put("executionTime",thisGenStats.getExecutionTime());
-            resultsLogger.put("generations",thisGenStats.getGenerations());
-            resultsLogger.put("generationLimit",thisGenStats.getGenerationLimit());
-            resultsLogger.put("exceptionTerminated",thisGenStats.isExceptionTerminated());
-            resultsLogger.put("fitnessEvaluationNumbers",thisGenStats.getFitnessEvaluationNumbers());
-            resultsLogger.put("timeSpentInFitnessEval",thisGenStats.getTimeSpentInFitnessEval());
-            resultsLogger.put("randomSeed",thisGenStats.getRandomSeed());
-            resultsLogger.put("maxValue",thisGenStats.getMaxValue());
-            resultsLogger.put("minValue",thisGenStats.getMinValue());
-            resultsLogger.put("averageValue",thisGenStats.getAverageValue());
-*/
+/*          The Excel Logger doesn't seem to write lines properly
+ *          log.fine("Output line to results Excel file");
+            resultsXSLLogger.setLine(ga.getGeneration());
+            resultsXSLLogger.put("startTime",ga.statistics.getStartTime());
+            resultsXSLLogger.put("generation",ga.getGeneration());
+            resultsXSLLogger.put("randomSeed",ga.statistics.getRandomSeed());
+            resultsXSLLogger.put("maxValue",thisGenStats.getLegalHighestScore());
+            resultsXSLLogger.put("minValue",thisGenStats.getLegalScoreAvg());
+            resultsXSLLogger.put("averageValue",thisGenStats.getLegalLowestScore());
+            resultsXSLLogger.save();
+            log.fine("saved XSL restuls line "+resultsXSLLogger.getLine());*/
+            log.fine("Output line to results CSV file");
+            resultsCSVLogger.put("startTime",ga.statistics.getStartTime());
+            resultsCSVLogger.put("generation",ga.getGeneration());
+            resultsCSVLogger.put("randomSeed",ga.statistics.getRandomSeed());
+            resultsCSVLogger.put("maxValue",thisGenStats.getLegalHighestScore());
+            resultsCSVLogger.put("minValue",thisGenStats.getLegalScoreAvg());
+            resultsCSVLogger.put("averageValue",thisGenStats.getLegalLowestScore());
+            resultsCSVLogger.save();
+            log.fine("saved CSV restuls line.");
         }
 
     @Override
     public void onAlgorithmStart(GeneticAlgorithm ga, long time) {
         MessageBar.setText(ga.getTitle() + " has started");
+        runningAlgorithm=ga;
     }
 
     @Override
@@ -779,6 +807,12 @@ public class GateController implements Initializable, GenerationEventListener,Al
         experimentQueueList.remove(ga.getTitle()); 
         experiments.remove(ga.getTitle());
         ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
+        ExperimentQueue.getSelectionModel().select(0);
+//        resultsXSLLogger.close();
+        resultsCSVLogger.close();
+        runningAlgorithm=null;
+/*        MessageBar.setText(MessageBar.getText()+" Starting Next Experiment");
+        this.StartExperiment(new ActionEvent());*/
     }
 
     @Override
