@@ -47,6 +47,7 @@ import jenes.population.Individual;
 import jenes.population.Population;
 import jenes.population.Population.Statistics;
 import jenes.stage.AbstractStage;
+import jenes.stage.operator.Mutator;
 import jenes.utils.CSVLogger;
 //import jenes.utils.XLSLogger;
 import org.java.plugin.JpfException;
@@ -76,15 +77,15 @@ public class GateController implements Initializable, GenerationEventListener,Al
     private ObservableList chromList;
     private ObservableList fitnessFunctionList;
     private Population.Statistics stats;
-    private HashMap fitnessFunctions = new HashMap<String,PluginDescriptor>();
-    private HashMap genericStages = new HashMap<String,PluginDescriptor>();
-    private HashMap chromosomeTypes = new HashMap<String,PluginDescriptor>();
-    private HashMap experiments = new HashMap<String,GeneticAlgorithm>();
+    private HashMap fitnessFunctions = new HashMap<>();
+    private HashMap genericStages = new HashMap<>();
+    private HashMap chromosomeTypes = new HashMap<>();
+    private HashMap experiments = new HashMap<>();
 //    private XLSLogger resultsXSLLogger= null;
     private CSVLogger resultsCSVLogger= null;
     String resultsLoggerSchema[] = {"startTime","generation","randomSeed","maxValue","minValue","averageValue"};
     long maxPopSize;
-    float mutationRate;
+    double mutationRate;
     long maxGenerations;
     GeneticAlgorithm runningAlgorithm=null;
     
@@ -563,7 +564,7 @@ public class GateController implements Initializable, GenerationEventListener,Al
             MessageBar.setText("Conductin Experiment: " +ga.getTitle());
             runningAlgorithm = ga;
         //Create an XLS Logfile
-            Path resultsXSLLoggerLocation = Paths.get(System.getProperty("user.home"),ga.getTitle()+".xls");
+//            Path resultsXSLLoggerLocation = Paths.get(System.getProperty("user.home"),ga.getTitle()+".xls");
             Path resultsCSVLoggerLocation = Paths.get(System.getProperty("user.home"),ga.getTitle()+".csv");
             try {
 //                resultsXSLLogger = new XLSLogger(resultsLoggerSchema,resultsXSLLoggerLocation.toString());
@@ -639,19 +640,20 @@ public class GateController implements Initializable, GenerationEventListener,Al
 
     private boolean addStages(GeneticAlgorithm ga) {
         AbstractStage thisStage=null;
-        log.fine("The ordered list of stages is " + selectedStageList.toString());
+        PluginDescriptor stagePluginDesc;
+        log.log(Level.FINE, "The ordered list of stages is {0}", selectedStageList.toString());
     //look up the plugin descriptor in the hashmaps?
         for (Iterator it = selectedStageList.iterator(); it.hasNext();){
             String stageName = (String) it.next();
-            log.fine("Creating the stage " + stageName);
-            PluginDescriptor stagePluginDesc = (PluginDescriptor) genericStages.get(stageName);
-            log.fine("Found " + stageName +" Plugin Descriptor " + stagePluginDesc.getPluginClassName());
+            log.log(Level.FINE, "Creating the stage {0}", stageName);
+            stagePluginDesc = (PluginDescriptor) genericStages.get(stageName);
+            log.log(Level.FINE, "Found {0} Plugin Descriptor {1}", new Object[]{stageName, stagePluginDesc.getPluginClassName()});
         //create an instance of the stage.
             ClassLoader classLoader = pluginManager.getPluginClassLoader(stagePluginDesc);
             Class pluginClass = null;
             try {
                 pluginClass = classLoader.loadClass(stagePluginDesc.getPluginClassName());
-                log.fine("Created an instance of " + pluginClass.getCanonicalName());
+                log.log(Level.FINE, "Created an instance of {0}", pluginClass.getCanonicalName());
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(GateController.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
@@ -667,6 +669,22 @@ public class GateController implements Initializable, GenerationEventListener,Al
                 String params = AddedParams.getText();
                 if (params == null){params="";}
                 thisStage.processProperties(params);
+                
+        //If this is a mutator add the mutation rate
+                log.fine("Checking for Mutators!!");
+                Extension ep;
+                Collection thisStageEP = stagePluginDesc.getExtensions();
+                Iterator epIter=thisStageEP.iterator();
+                while (epIter.hasNext()){
+                    ep=(Extension) epIter.next();
+                    String expTypeName = ep.getExtendedPluginId();
+                     if ("jenes.stage.operator.Mutator".equals(expTypeName)){
+                         log.fine("This stage is a mutator, so set the mutation rate");
+                         Mutator thisMutatorStage= (Mutator) thisStage;
+                         checkMutRate();
+                         thisMutatorStage.setProbability(mutationRate);
+                     }
+                }
         //Add the stage to the GA
                 ga.addStage(thisStage);
                 log.fine("Added Stage to Algorithm");
@@ -803,9 +821,9 @@ public class GateController implements Initializable, GenerationEventListener,Al
 //        resultsXSLLogger.close();
         resultsCSVLogger.close();
         runningAlgorithm=null;
-        MessageBar.setText(MessageBar.getText()+" Starting Next Experiment");
 
         if(AutoRun.isSelected()){
+            MessageBar.setText(MessageBar.getText()+" Starting Next Experiment");
             this.StartExperiment(new ActionEvent());
         }
         
@@ -847,6 +865,21 @@ public class GateController implements Initializable, GenerationEventListener,Al
                     resultsCSVLogger.put("averageValue",thisGenStats.getLegalLowestScore());
                     resultsCSVLogger.save();
                     log.fine("saved CSV restuls line.");
+    }
+
+    private void checkMutRate() {
+        double muteRate=-1;
+        String mutationRateRaw = MutRate.getText();
+        try{
+            muteRate = Double.valueOf(mutationRateRaw);
+        }catch(NumberFormatException nfe){
+            log.fine("Mutation Rate mustbe a nnumber less than 1 and greater than 0");
+            MessageBar.setText("Mutation Rate mustbe a nnumber less than 1 and greater than 0");
+        }
+        if((0 > muteRate)||( muteRate >= 1)){
+            MessageBar.setText("Mutation Rate mustbe a nnumber less than 1 and greater than 0");
+        }
+        mutationRate= muteRate;
     }
 
 
