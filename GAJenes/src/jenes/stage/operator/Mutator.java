@@ -18,6 +18,7 @@
  */
 package jenes.stage.operator;
 
+import java.util.logging.Logger;
 import jenes.chromosome.Chromosome;
 import jenes.population.Individual;
 import jenes.population.Population;
@@ -43,9 +44,9 @@ import jenes.stage.StageException;
  */
 public abstract class Mutator<T extends Chromosome> extends Operator<T> {
 
-    /** The mutation probablility */
+    /** The mutation probability */
     protected double probability;
-
+    protected static final Logger log = java.util.logging.Logger.getLogger(Mutator.class.getName()) ;
     /**
      * Constructs a new mutator instance with the specified mutator probability
      * 
@@ -72,6 +73,7 @@ public abstract class Mutator<T extends Chromosome> extends Operator<T> {
      */
     public void setProbability(double probability) {
         this.probability = probability;
+        log.fine("Set the mutaion probability to "+probability);
     }
 
     @Override
