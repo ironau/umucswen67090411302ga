@@ -40,51 +40,7 @@
       <right>
         <Accordion fx:id="Config" blendMode="SOFT_LIGHT" prefHeight="300.0" BorderPane.alignment="TOP_LEFT">
           <expandedPane>
-            <TitledPane fx:id="Stage" alignment="TOP_LEFT" animated="false" text="Stage Selection">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="491.0" prefViewportHeight="508.0" prefViewportWidth="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <content>
-                        <VBox id="VBox" prefHeight="491.0" prefWidth="187.0" spacing="5.0">
-                          <children>
-                            <Label text="Chromosome Type" VBox.vgrow="NEVER">
-                              <VBox.margin>
-                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
-                              </VBox.margin>
-                            </Label>
-                            <ChoiceBox fx:id="ChromSelect" prefWidth="180.0" VBox.margin="$x1" VBox.vgrow="NEVER">
-                              <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                  <String fx:value="Item 1" />
-                                  <String fx:value="Item 2" />
-                                  <String fx:value="Item 3" />
-                                </FXCollections>
-                              </items>
-                            </ChoiceBox>
-                            <Label text="Fitness Function" VBox.margin="$x1" VBox.vgrow="NEVER" />
-                            <ChoiceBox fx:id="SelectedFitnessFunction" minHeight="-Infinity" minWidth="-Infinity" prefWidth="180.0" VBox.margin="$x1" VBox.vgrow="NEVER">
-                              <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                  <String fx:value="Item 1" />
-                                  <String fx:value="Item 2" />
-                                  <String fx:value="Item 3" />
-                                </FXCollections>
-                              </items>
-                            </ChoiceBox>
-                            <Label text="Additional Stages" VBox.margin="$x1" VBox.vgrow="NEVER" />
-                            <ListView fx:id="AvailStages" minHeight="-Infinity" onMouseClicked="#toggleStage" prefHeight="300.0" VBox.margin="$x1" VBox.vgrow="SOMETIMES" />
-                          </children>
-                        </VBox>
-                      </content>
-                    </ScrollPane>
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
-          </expandedPane>
-          <panes>
-            <TitledPane fx:id="Props" alignment="TOP_LEFT" pickOnBounds="true" text="Properties Selection">
+            <TitledPane fx:id="Props" alignment="TOP_LEFT" animated="false" pickOnBounds="true" text="Properties Selection">
               <content>
                 <AnchorPane id="Content" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
                   <children>
@@ -153,7 +109,51 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-            <fx:reference source="Stage" />
+          </expandedPane>
+          <panes>
+            <fx:reference source="Props" />
+            <TitledPane fx:id="Stage" alignment="TOP_LEFT" animated="false" expanded="false" text="Stage Selection">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="491.0" prefViewportHeight="508.0" prefViewportWidth="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <content>
+                        <VBox id="VBox" prefHeight="491.0" prefWidth="187.0" spacing="5.0">
+                          <children>
+                            <Label text="Chromosome Type" VBox.vgrow="NEVER">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </Label>
+                            <ChoiceBox fx:id="ChromSelect" prefWidth="180.0" VBox.margin="$x1" VBox.vgrow="NEVER">
+                              <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                  <String fx:value="Item 1" />
+                                  <String fx:value="Item 2" />
+                                  <String fx:value="Item 3" />
+                                </FXCollections>
+                              </items>
+                            </ChoiceBox>
+                            <Label text="Fitness Function" VBox.margin="$x1" VBox.vgrow="NEVER" />
+                            <ChoiceBox fx:id="SelectedFitnessFunction" minHeight="-Infinity" minWidth="-Infinity" prefWidth="180.0" VBox.margin="$x1" VBox.vgrow="NEVER">
+                              <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                  <String fx:value="Item 1" />
+                                  <String fx:value="Item 2" />
+                                  <String fx:value="Item 3" />
+                                </FXCollections>
+                              </items>
+                            </ChoiceBox>
+                            <Label text="Additional Stages" VBox.margin="$x1" VBox.vgrow="NEVER" />
+                            <ListView fx:id="AvailStages" minHeight="-Infinity" onMouseClicked="#toggleStage" prefHeight="300.0" VBox.margin="$x1" VBox.vgrow="SOMETIMES" />
+                          </children>
+                        </VBox>
+                      </content>
+                    </ScrollPane>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
             <TitledPane id="StageOrd" fx:id="x2" animated="false" text="Stage Ordering">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -171,7 +171,11 @@
                                 <Insets bottom="4.0" left="4.0" right="15.0" top="4.0" />
                               </padding>
                             </HBox>
-                            <ListView fx:id="StageOrd" minHeight="-Infinity" prefHeight="300.0" VBox.margin="$x1" VBox.vgrow="SOMETIMES" />
+                            <ListView fx:id="StageOrd" minHeight="-Infinity" prefHeight="300.0" VBox.vgrow="SOMETIMES">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </ListView>
                           </children>
                         </VBox>
                       </content>
@@ -188,8 +192,16 @@
                       <content>
                         <VBox id="VBox" spacing="5.0">
                           <children>
-                            <CheckBox fx:id="AutoRun" alignment="TOP_LEFT" contentDisplay="TOP" mnemonicParsing="false" text="Automatically Run Queue" VBox.margin="$x1" />
-                            <ListView fx:id="ExperimentQueue" minHeight="-Infinity" prefHeight="300.0" VBox.margin="$x1" VBox.vgrow="SOMETIMES" />
+                            <CheckBox fx:id="AutoRun" alignment="TOP_LEFT" contentDisplay="TOP" mnemonicParsing="false" text="Automatically Run Queue">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </CheckBox>
+                            <ListView fx:id="ExperimentQueue" minHeight="-Infinity" prefHeight="300.0" VBox.vgrow="SOMETIMES">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </ListView>
                           </children>
                           <padding>
                             <Insets bottom="5.0" right="5.0" top="5.0" />

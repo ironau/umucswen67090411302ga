@@ -40,46 +40,6 @@
       <right>
         <Accordion fx:id="Config" blendMode="SOFT_LIGHT" prefHeight="300.0" BorderPane.alignment="TOP_LEFT">
           <expandedPane>
-            <TitledPane fx:id="Props" alignment="TOP_LEFT" pickOnBounds="true" text="Properties Selection">
-              <content>
-                <AnchorPane id="Content" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="491.0" prefViewportHeight="491.0" prefViewportWidth="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <content>
-                        <VBox id="VBox" prefHeight="491.0" prefWidth="187.0" spacing="5.0">
-                          <children>
-                            <Label text="Chromsomes per Individual">
-                              <VBox.margin>
-                                <Insets bottom="2.0" right="2.0" top="2.0" />
-                              </VBox.margin>
-                            </Label>
-                            <Slider fx:id="JeneSize" majorTickUnit="3.0" max="25.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" VBox.vgrow="NEVER">
-                              <VBox.margin>
-                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
-                              </VBox.margin>
-                            </Slider>
-                            <Label contentDisplay="CENTER" prefWidth="112.0" text="Max Population Size" VBox.margin="$x1" />
-                            <TextField fx:id="MaxPopTxt" prefWidth="181.0" promptText="Maximum Population Size" VBox.margin="$x1" VBox.vgrow="NEVER" />
-                            <Label text="Mutation Rate" VBox.margin="$x1" />
-                            <TextField fx:id="MutRate" prefWidth="181.0" promptText="Mutation Rate" VBox.margin="$x1" VBox.vgrow="NEVER" />
-                            <Label fx:id="MaxGenLbll" text="Maximum Generations" VBox.margin="$x1" />
-                            <TextField fx:id="MaxGen" prefWidth="181.0" promptText="Maximum Generations" VBox.margin="$x1" VBox.vgrow="NEVER" />
-                            <Label text="Additional Parameters" VBox.margin="$x1" />
-                            <TextArea fx:id="AddedParams" minHeight="-Infinity" prefHeight="140.0" promptText="Enter additional parameters" wrapText="true" VBox.margin="$x1" VBox.vgrow="SOMETIMES" />
-                          </children>
-                          <padding>
-                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                          </padding>
-                        </VBox>
-                      </content>
-                    </ScrollPane>
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
-          </expandedPane>
-          <panes>
-            <fx:reference source="Props" />
             <TitledPane fx:id="Stage" alignment="TOP_LEFT" animated="false" text="Stage Selection">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -122,6 +82,78 @@
                 </AnchorPane>
               </content>
             </TitledPane>
+          </expandedPane>
+          <panes>
+            <TitledPane fx:id="Props" alignment="TOP_LEFT" pickOnBounds="true" text="Properties Selection">
+              <content>
+                <AnchorPane id="Content" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="491.0" prefViewportHeight="491.0" prefViewportWidth="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <content>
+                        <VBox id="VBox" prefHeight="491.0" prefWidth="187.0" spacing="5.0">
+                          <children>
+                            <Label text="Chromsomes per Individual">
+                              <VBox.margin>
+                                <Insets bottom="2.0" right="2.0" top="2.0" />
+                              </VBox.margin>
+                            </Label>
+                            <Slider fx:id="JeneSize" majorTickUnit="3.0" max="25.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" VBox.vgrow="NEVER">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </Slider>
+                            <Label contentDisplay="CENTER" prefWidth="112.0" text="Max Population Size">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </Label>
+                            <TextField fx:id="MaxPopTxt" minHeight="20.0" minWidth="100.0" prefWidth="181.0" promptText="Maximum Population Size" VBox.vgrow="NEVER">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </TextField>
+                            <Label text="Mutation Rate">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </Label>
+                            <TextField fx:id="MutRate" minHeight="20.0" minWidth="100.0" prefWidth="181.0" promptText="Mutation Rate" VBox.vgrow="NEVER">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </TextField>
+                            <Label fx:id="MaxGenLbll" text="Maximum Generations">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </Label>
+                            <TextField fx:id="MaxGen" minHeight="20.0" minWidth="100.0" prefWidth="181.0" promptText="Maximum Generations" VBox.vgrow="NEVER">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </TextField>
+                            <Label text="Additional Parameters">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </Label>
+                            <TextArea fx:id="AddedParams" minHeight="-Infinity" prefHeight="140.0" promptText="Enter additional parameters" wrapText="true" VBox.vgrow="SOMETIMES">
+                              <VBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" fx:id="x1" />
+                              </VBox.margin>
+                            </TextArea>
+                          </children>
+                          <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </padding>
+                        </VBox>
+                      </content>
+                    </ScrollPane>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+            <fx:reference source="Stage" />
             <TitledPane id="StageOrd" fx:id="x2" animated="false" text="Stage Ordering">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
