@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="GAJenes" default="default" basedir=".">
+    <description>Builds, tests, and runs the project GAJenes.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="GAJenes-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+    
+    <target name="-pre-jar">
+        <dirname file="${dist.jar}" property="dist.jar.dir"/>
+        <copy todir="${dist.jar.dir}" flatten="yes">
+            <fileset dir="${basedir}${file.separator}src${file.separator}" excludes="${build.classes.excludes},${excludes}" includes="**/plugin.xml"/>
+        </copy> 
+    </target>
+    <target name="-post-jar">
+        <!-- Create Standard Plugins that come prebuilt in Jenes -->
+        <macrodef name="package-plugin">
+            <attribute name="pluginclass"/>
+            <attribute name="pluginLocation"/>
+            <attribute name="libraryID"/>
+            <attribute name="pluginID"/>
+            <attribute name="extensionClass" default="None"/>
+            <attribute name="chromosomeType" default="Any"/>
+            <attribute name="toolTip" default="No Information Available"/>
+            <sequential>
+               <echo message="The plugin class specified was @{pluginclass}"/>
+               <echo message="The plugin location was @{pluginLocation}"/>
+               <echo file="${build.dir}${file.separator}plugin.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd"&gt;
+&lt;plugin id="@{pluginID}" class="@{pluginclass}" version="1.5.1"&gt;
+    &lt;requires&gt;
+        &lt;import plugin-id="@{extensionclass}"/&gt;
+    &lt;/requires&gt;
+    &lt;runtime&gt;
+        &lt;library id="@{libraryID}" path="/" type="code"/&gt;
+    &lt;/runtime&gt;
+    &lt;extension plugin-id="@{extensionClass}" point-id="@{extensionClass}" id="@{pluginID}"&gt;
+        &lt;parameter id="name" value="@{libraryID}"/&gt;
+        &lt;parameter id="class" value="@{pluginclass}"/&gt;
+        &lt;parameter id="chromosome" value="@{chromosomeType}"/&gt;
+        &lt;parameter id="toolTip" value="@{toolTip}"/&gt;
+    &lt;/extension&gt;
+&lt;/plugin&gt;
+                 </echo>
+                 <echo message="build directory is ${build.dir}"/>
+                <jar destfile="@{pluginLocation}${file.separator}@{libraryID}.jar">
+                    <fileset dir="${build.dir}">
+                        <include name="**/@{libraryID}.class"/> 
+                    </fileset>
+                    <fileset dir="${build.dir}">
+                        <include name="plugin.xml"/> 
+                    </fileset>
+                </jar>
+            </sequential>
+        </macrodef>
+        <macrodef name="define-ExtensionPoint">
+            <attribute name="pluginclass"/>
+            <attribute name="pluginLocation"/>
+            <attribute name="libraryID"/>
+            <attribute name="pluginID"/>
+            <attribute name="extensionClass" default="None"/>
+            <attribute name="chromosomeType" default="Any"/>
+            <attribute name="toolTip" default="No Information Available"/>
+            <sequential>
+               <echo message="The plugin class specified was @{pluginclass}"/>
+               <echo message="The plugin location was @{pluginLocation}"/>
+               <echo file="${build.dir}${file.separator}plugin.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd"&gt;
+&lt;plugin id="@{pluginID}" class="@{pluginclass}" version="1.5.1"&gt;
+    &lt;runtime&gt;
+        &lt;library id="@{libraryID}" path="/" type="code"&gt;
+            &lt;export prefix="*" /&gt;
+        &lt;/library>
+    &lt;/runtime&gt;
+    &lt;extension-point id="@{pluginclass}"&gt;
+        &lt;parameter-def id="class"/&gt;
+        &lt;parameter-def id="name"/&gt;
+        &lt;parameter-def id="chromosome" multiplicity="none-or-one"/&gt;
+        &lt;parameter-def id="toolTip" multiplicity="none-or-one"/&gt;
+    &lt;/extension-point&gt;
+&lt;/plugin&gt;
+                 </echo>
+                 <echo message="build directory is ${build.dir}"/>
+                <jar destfile="@{pluginLocation}${file.separator}@{libraryID}.jar">
+                    <fileset dir="${build.dir}">
+                        <include name="**/@{libraryID}.class"/> 
+                    </fileset>
+                    <fileset dir="${build.dir}">
+                        <include name="plugin.xml"/> 
+                    </fileset>
+                </jar>
+            </sequential>
+        </macrodef>
+        <define-ExtensionPoint pluginclass="jenes.stage.operator.Crossover" pluginLocation="${dist.jar.dir}" libraryID="Crossover" 
+            pluginID="jenes.stage.operator.Crossover" extensionClass="jenes.stage.operator.Crossover"/>
+        <define-ExtensionPoint pluginclass="jenes.stage.operator.Mutator" pluginLocation="${dist.jar.dir}" libraryID="Mutator" 
+            pluginID="jenes.stage.operator.Mutator" extensionClass="jenes.stage.operator.Mutator"/>        
+        <define-ExtensionPoint pluginclass="jenes.stage.operator.Scaling" pluginLocation="${dist.jar.dir}" libraryID="Scaling" 
+            pluginID="jenes.stage.operator.Scaling" extensionClass="jenes.stage.operator.Scaling"/>        
+        <define-ExtensionPoint pluginclass="jenes.stage.operator.Selector" pluginLocation="${dist.jar.dir}" libraryID="Selector" 
+            pluginID="jenes.stage.operator.Selector" extensionClass="jenes.stage.operator.Selector"/>        
+        <define-ExtensionPoint pluginclass="jenes.stage.operator.Crowder" pluginLocation="${dist.jar.dir}" libraryID="Crowder" 
+            pluginID="jenes.stage.operator.Crowder" extensionClass="jenes.stage.operator.Crowder"/>        
+        <define-ExtensionPoint pluginclass="jenes.population.Fitness" pluginLocation="${dist.jar.dir}" libraryID="Fitness" 
+            pluginID="jenes.population.Fitness" extensionClass="jenes.population.Fitness"/>
+        <define-ExtensionPoint pluginclass="jenes.chromosome.Chromosome" pluginLocation="${dist.jar.dir}" libraryID="Chromosome" 
+            pluginID="jenes.chromosome.Chromosome" extensionClass="jenes.chromosome.Chromosome"/>
+        <define-ExtensionPoint pluginclass="jenes.stage.AbstractStage" pluginLocation="${dist.jar.dir}" libraryID="AbstractStage" 
+            pluginID="jenes.stage.AbstractStage" extensionClass="jenes.stage.AbstractStage"/>
+
+<!-- package predefined plugins -->
+
+        <package-plugin pluginclass="jenes.stage.Sequence" pluginLocation="${dist.jar.dir}" libraryID="Sequence" 
+            pluginID="jenes.stage.Sequence" extensionClass="jenes.stage.AbstractStage" toolTip="a Generic Sequence stage"/>
+        <package-plugin pluginclass="jenes.stage.Evaluator" pluginLocation="${dist.jar.dir}" libraryID="Evaluator" 
+            pluginID="jenes.stage.Evaluator" extensionClass="jenes.stage.AbstractStage"/>
+        <package-plugin pluginclass="jenes.stage.BreakPoint" pluginLocation="${dist.jar.dir}" libraryID="BreakPoint" 
+            pluginID="jenes.stage.BreakPoint" extensionClass="jenes.stage.AbstractStage"/>
+        <package-plugin pluginclass="jenes.chromosome.BitwiseChromosome" pluginLocation="${dist.jar.dir}" libraryID="BitwiseChromosome" 
+            pluginID="jenes.chromosome.BitwiseChromosome" extensionClass="jenes.chromosome.Chromosome"/>
+        <package-plugin pluginclass="jenes.chromosome.BooleanChromosome" pluginLocation="${dist.jar.dir}" libraryID="BooleanChromosome" 
+            pluginID="jenes.chromosome.BooleanChromosome" extensionClass="jenes.chromosome.Chromosome"/>
+        <package-plugin pluginclass="jenes.chromosome.DoubleChromosome" pluginLocation="${dist.jar.dir}" libraryID="DoubleChromosome" 
+            pluginID="jenes.chromosome.DoubleChromosome" extensionClass="jenes.chromosome.Chromosome"/>
+        <package-plugin pluginclass="jenes.chromosome.IntegerChromosome" pluginLocation="${dist.jar.dir}" libraryID="IntegerChromosome" 
+            pluginID="jenes.chromosome.IntegerChromosome" extensionClass="jenes.chromosome.Chromosome"/>
+        <package-plugin pluginclass="jenes.chromosome.ObjectChromosome" pluginLocation="${dist.jar.dir}" libraryID="ObjectChromosome" 
+            pluginID="jenes.chromosome.ObjectChromosome" extensionClass="jenes.chromosome.Chromosome"/>
+        <package-plugin pluginclass="jenes.chromosome.PermutationChromosome" pluginLocation="${dist.jar.dir}" libraryID="PermutationChromosome" 
+            pluginID="jenes.chromosome.PermutationChromosome" extensionClass="jenes.chromosome.Chromosome"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.SimpleMutator" pluginLocation="${dist.jar.dir}" libraryID="SimpleMutator" 
+            pluginID="jenes.stage.operator.common.SimpleMutator" extensionClass="jenes.stage.operator.Mutator"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.RouletteWheelSelector" pluginLocation="${dist.jar.dir}" libraryID="RouletteWheelSelector" 
+            pluginID="jenes.stage.operator.common.RouletteWheelSelector" extensionClass="jenes.stage.operator.Selector"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.TournamentSelector" pluginLocation="${dist.jar.dir}" libraryID="TournamentSelector" 
+            pluginID="jenes.stage.operator.common.TournamentSelector" extensionClass="jenes.stage.operator.Selector"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.DeJongCrowder" pluginLocation="${dist.jar.dir}" libraryID="DeJongCrowder" 
+            pluginID="jenes.stage.operator.common.DeJongCrowder" extensionClass="jenes.stage.operator.Crowder"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.DeterministicCrowder" pluginLocation="${dist.jar.dir}" libraryID="DeterministicCrowder" 
+            pluginID="jenes.stage.operator.common.DeterministicCrowder" extensionClass="jenes.stage.operator.Crowder"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.HeuristicCrossover" pluginLocation="${dist.jar.dir}" libraryID="HeuristicCrossover" 
+            pluginID="jenes.stage.operator.common.HeuristicCrossover" extensionClass="jenes.stage.operator.Crossover"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.IntermediateCrossover" pluginLocation="${dist.jar.dir}" libraryID="IntermediateCrossover" 
+            pluginID="jenes.stage.operator.common.IntermediateCrossover" extensionClass="jenes.stage.operator.Crossover"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.MultiNicheCrowder" pluginLocation="${dist.jar.dir}" libraryID="MultiNicheCrowder" 
+            pluginID="jenes.stage.operator.common.MultiNicheCrowder" extensionClass="jenes.stage.operator.Crowder"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.OnePointCrossover" pluginLocation="${dist.jar.dir}" libraryID="OnePointCrossover" 
+            pluginID="jenes.stage.operator.common.OnePointCrossover" extensionClass="jenes.stage.operator.Crossover"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.ProportionalScaling" pluginLocation="${dist.jar.dir}" libraryID="ProportionalScaling" 
+            pluginID="jenes.stage.operator.common.ProportionalScaling" extensionClass="jenes.stage.operator.Scaling"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.TopScaling" pluginLocation="${dist.jar.dir}" libraryID="TopScaling" 
+            pluginID="jenes.stage.operator.common.TopScaling" extensionClass="jenes.stage.operator.Scaling"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.TwoPointsCrossover" pluginLocation="${dist.jar.dir}" libraryID="TwoPointsCrossover" 
+            pluginID="jenes.stage.operator.common.TwoPointsCrossover" extensionClass="jenes.stage.operator.Crossover"/>
+        <package-plugin pluginclass="jenes.stage.operator.common.SimpleMutator" pluginLocation="${dist.jar.dir}" libraryID="SimpleMutator" 
+            pluginID="jenes.stage.operator.common.SimpleMutator" extensionClass="jenes.chromosome.Mutator"/>
+        <package-plugin pluginclass="jenes.tutorials.problem10.FF4XYLessX4LessY4" pluginLocation="${dist.jar.dir}" libraryID="FF4XYLessX4LessY4" 
+            pluginID="jenes.tutorials.problem10.FF4XYLessX4LessY4" extensionClass="jenes.population.Fitness" chromosomeType="jenes.chromosome.DoubleChromosome" toolTip="Sovles the equation 4xy -x^4 -y^4.  Requires a DoubleChromosome."/>
+        <package-plugin pluginclass="jenes.tutorials.problem10.FF4WhatXisBestY" pluginLocation="${dist.jar.dir}" libraryID="FF4WhatXisBestY" 
+            pluginID="jenes.tutorials.problem10.FF4WhatXisBestY" extensionClass="jenes.population.Fitness" chromosomeType="jenes.chromosome.DoubleChromosome" toolTip="DoubleChromosome."/>
+<!-- the target file doesn't exist for this fitness funciton
+        <package-plugin pluginclass="jenes.tutorials.problem11.ImageMatchingFitness" pluginLocation="${dist.jar.dir}" libraryID="ImageMatchingFitness" 
+            pluginID="jenes.tutorials.problem11.ImageMatchingFitness" extensionClass="jenes.population.Fitness" chromosomeType="jenes.chromosome.BitwiseChromosome" toolTip="BitwiseChromosome."/>
+            -->
+    </target>
+</project>
