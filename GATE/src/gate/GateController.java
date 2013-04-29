@@ -589,17 +589,29 @@ public class GateController implements Initializable, GenerationEventListener,Al
      */
         public void AbortExperiment(ActionEvent event) {
             if(runningAlgorithm == null){
+                //If there is no running algorithm, then we need to remove the selecte experiment
+                String selectedInQueue =  (String) ExperimentQueue.getSelectionModel().getSelectedItem();
+                if ((selectedInQueue != null) && (!selectedInQueue.isEmpty())){
+                    MessageBar.setText("Removing experiment "+selectedInQueue);
+                    experimentQueueList.remove(selectedInQueue); 
+                    experiments.remove(selectedInQueue);
+                    ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
+                }else {
+                    //There was no algorithm select so do nothing and don't assume.
+                    MessageBar.setText("There was no experiment selected. To remove an experiment select it and press Abort");
+                }
                 return;
             }
+            // Then there is a running algorithm, so abort it.  The current generation will complete.
             log.fine("Aborting Experiment "+runningAlgorithm.getTitle());
             runningAlgorithm.cancel(true);
             MessageBar.setText(runningAlgorithm.getTitle()+ "was aborted");
             experimentQueueList.remove(runningAlgorithm.getTitle()); 
             experiments.remove(runningAlgorithm.getTitle());
             ExperimentQueue.setItems(FXCollections.observableArrayList(experimentQueueList));
+            log.fine(runningAlgorithm.getTitle()+ " was Aborted");
 
             runningAlgorithm=null;
-            //todo: Stop the current experiment.
         }
 
     private Fitness CreateFitnessFuction(String selectedFF) {
@@ -711,18 +723,22 @@ public class GateController implements Initializable, GenerationEventListener,Al
             msg.append(" Additional Stages ");
             allSelected = false;
         }
-        log.fine(msg.toString());
-        
+        if (selectedStageList.size() <1){
+            msg.append(" Additional Stages ");
+            allSelected = false;
+        }
         int tempMaxPop=0;
         try{
              tempMaxPop = Integer.valueOf(MaxPopTxt.getText());
         }catch (NumberFormatException nfe){
             msg.append(" Maximum Population must be an integer");
+            allSelected = false;
         }
         if(tempMaxPop < 1) {
             msg.append(" Maximum Population must be 1 or more");
             allSelected = false;
         }
+        log.fine(msg.toString());
         return allSelected;
     }
 
@@ -868,16 +884,17 @@ public class GateController implements Initializable, GenerationEventListener,Al
     }
 
     private void checkMutRate() {
-        double muteRate=-1;
+        //This is also the value in the default constructor of the abstract Mutator class.
+        double muteRate=0.1;
         String mutationRateRaw = MutRate.getText();
         try{
             muteRate = Double.valueOf(mutationRateRaw);
         }catch(NumberFormatException nfe){
             log.fine("Mutation Rate mustbe a nnumber less than 1 and greater than 0");
-            MessageBar.setText("Mutation Rate mustbe a nnumber less than 1 and greater than 0");
+            MessageBar.setText("No Mutation rate specified the Default Mutation Rated (0.1) was used.");
         }
         if((0 > muteRate)||( muteRate >= 1)){
-            MessageBar.setText("Mutation Rate mustbe a nnumber less than 1 and greater than 0");
+            MessageBar.setText("Invalid Mutation Rate, the Default Mutation Rated (0.1) was used. Mutaiton Rate mustbe less than 1 and greater than 0");
         }
         mutationRate= muteRate;
     }

@@ -65,7 +65,7 @@
                             <Label fx:id="MaxGenLbll" text="Maximum Generations" VBox.margin="$x1" />
                             <TextField fx:id="MaxGen" prefWidth="181.0" promptText="Maximum Generations" VBox.margin="$x1" VBox.vgrow="NEVER" />
                             <Label text="Additional Parameters" VBox.margin="$x1" />
-                            <TextArea fx:id="AddedParams" prefHeight="140.0" promptText="Enter additional parameters" wrapText="true" VBox.margin="$x1" VBox.vgrow="SOMETIMES" />
+                            <TextArea fx:id="AddedParams" minHeight="-Infinity" prefHeight="140.0" promptText="Enter additional parameters" wrapText="true" VBox.margin="$x1" VBox.vgrow="SOMETIMES" />
                           </children>
                           <padding>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
